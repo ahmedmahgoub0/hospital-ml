@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">hospital</string>
+    <string name="request_timeout">Request Timeout</string>
+    <string name="too_many_requests">Too many requests</string>
+    <string name="no_internet">No internet connection</string>
+    <string name="server_error">something went wrong</string>
+    <string name="serialization">Serialization error</string>
+    <string name="unknown_error">Unhandled exception</string>
+</resources>

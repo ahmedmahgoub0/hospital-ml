@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "309660446873",
+    "project_id": "hospital-f9632",
+    "storage_bucket": "hospital-f9632.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:309660446873:android:a650eb837b56322e800808",
+        "android_client_info": {
+          "package_name": "com.acoding.hospital"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDaNONlQ5lfoGWNTDMPBMjeb6XTs7XNI0g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
