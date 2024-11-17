@@ -8,27 +8,32 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 fun convertToEpochMillis(
-    dateString: String,
-    timeString: String
+    dateString: String?,
+    timeString: String?
 ): ZonedDateTime {
     return try {
+        // Define the date and time formatters
         val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val timeFormatter = DateTimeFormatter.ofPattern("hh:mm a")
+        val timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss")
 
-        // Parse date and time strings
-        val date = LocalDate.parse(dateString, dateFormatter)
-        val time = LocalTime.parse(timeString, timeFormatter)
+        // Handle null date or time by using defaults
+        val date = if (dateString.isNullOrEmpty()) LocalDate.now() else LocalDate.parse(
+            dateString,
+            dateFormatter
+        )
+        val time = if (timeString.isNullOrEmpty()) LocalTime.MIDNIGHT else LocalTime.parse(
+            timeString,
+            timeFormatter
+        )
 
-        // Combine date and time into a LocalDateTime
+        // Combine date and time into a LocalDateTime object
         val dateTime = LocalDateTime.of(date, time)
 
-        // Convert LocalDateTime to epoch milliseconds
-        dateTime.atZone(ZoneId.systemDefault())
+        // Convert LocalDateTime to ZonedDateTime
+        dateTime.atZone(ZoneId.systemDefault()) // Get ZonedDateTime based on the system default timezone
     } catch (e: Exception) {
         e.printStackTrace()
-        val dateTime = LocalDateTime.now()
-        dateTime.atZone(ZoneId.systemDefault())
+        // In case of an error, return the current time in the system's default zone
+        LocalDateTime.now().atZone(ZoneId.systemDefault())
     }
-    // Define formatters for date and time
-
 }

@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.acoding.hospital.ui.theme.SpaceMono
@@ -36,7 +37,7 @@ import com.acoding.hospital.ui.theme.SpaceMono
 @Composable
 fun HomeScreen(
     state: HomeListState,
-    onClick: (patientCode: String) -> Unit,
+    onClick: (patientId: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (state.isLoading) {
@@ -47,7 +48,6 @@ fun HomeScreen(
             CircularProgressIndicator()
         }
     } else {
-
         var searchText by remember { mutableStateOf("") }
         val filteredItems = state.patients.filter {
             it.name.contains(searchText, ignoreCase = true)
@@ -82,7 +82,7 @@ fun HomeScreen(
                         contentDescription = "Search Icon"
                     )
                 },
-                shape = MaterialTheme.shapes.medium,
+                shape = MaterialTheme.shapes.large,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
@@ -94,7 +94,7 @@ fun HomeScreen(
                 modifier = modifier
                     .fillMaxSize()
                     .clip(RoundedCornerShape(28.dp))
-                    .background(MaterialTheme.colorScheme.background)
+                    .background(Color.White)
                     .padding(top = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp)
@@ -106,7 +106,7 @@ fun HomeScreen(
                     HomeListItem(
                         modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null),
                         patient = patient,
-                        onCLick = { onClick(patient.code) },
+                        onCLick = { onClick(patient.id) },
                     )
                     HorizontalDivider()
                 }

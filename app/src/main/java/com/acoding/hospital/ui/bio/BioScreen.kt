@@ -46,7 +46,7 @@ enum class BioType {
     Sugar,
     Pressure,
     Temperature,
-    Statistics
+//    Statistics
 }
 
 @Composable
@@ -63,10 +63,10 @@ fun BioScreen(
         BioType.Sugar -> state.sugarDataPoints
         BioType.Pressure -> state.pressureDataPoints
         BioType.Temperature -> state.temperatureDataPoints
-        BioType.Statistics -> state.sugarDataPoints
+//        BioType.Statistics -> state.sugarDataPoints
     }
 
-    if (state.isLoading) {
+    if (state.detailsLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -85,9 +85,9 @@ fun BioScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 val criticalColor =
-                    if (patient.sugarStatus < 90) MaterialTheme.colorScheme.error
+                    if (patient.healthStatus < 60) MaterialTheme.colorScheme.error
                     else greenBackground
-                val critical = if (patient.sugarStatus < 90) "Critical" else "Normal"
+                val critical = if (patient.healthStatus < 60) "Critical" else "Normal"
 
                 Text(
                     text = patient.name,
@@ -180,7 +180,7 @@ fun BioScreen(
                     modifier = Modifier
                         .align(Alignment.Start)
                         .padding(start = 16.dp),
-                    text = patient.phone,
+                    text = patient.phoneNo,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Light,
                     color = contentColor
@@ -324,7 +324,7 @@ fun BioScreen(
                         unit = "",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .aspectRatio(18 / 20f)
+                            .aspectRatio(16 / 14f)
                             .onSizeChanged { totalChartWidth = it.width.toFloat() },
                         selectedDataPoint = selectedDataPoint,
                         onSelectedDataPoint = {
@@ -333,6 +333,7 @@ fun BioScreen(
                         onXLabelWidthChange = { labelWidth = it }
                     )
                 }
+
             }
         }
     }

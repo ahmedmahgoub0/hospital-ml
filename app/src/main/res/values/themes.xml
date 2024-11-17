@@ -3,4 +3,11 @@
 
     <style name="Theme.Hospital" parent="android:Theme.Material.Light.NoActionBar" />
 
+    <style name="Theme.MainActivity" parent="Theme.Hospital">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
 </resources>

@@ -55,6 +55,7 @@ dependencies {
 
     implementation(libs.bundles.koin)
 
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.bundles.ktor)
 
     testImplementation(libs.junit)

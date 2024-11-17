@@ -28,14 +28,14 @@ import com.acoding.hospital.ui.theme.greenBackground
 @Composable
 fun HomeListItem(
     patient: Patient,
-    onCLick: (patientCode: String) -> Unit,
+    onCLick: (patientId: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val contentColor = if (isSystemInDarkTheme()) Color.White else Color.Black
 
-    val criticalColor = if (patient.sugarStatus < 90) MaterialTheme.colorScheme.error
+    val criticalColor = if (patient.healthStatus < 60) MaterialTheme.colorScheme.error
     else greenBackground
-    val critical = if (patient.sugarStatus < 90) "Critical" else "Normal"
+    val critical = if (patient.healthStatus < 60) "Critical" else "Normal"
 
 //    Row(
 //        modifier = modifier
@@ -90,7 +90,7 @@ fun HomeListItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onCLick(patient.code) }
+            .clickable { onCLick(patient.id) }
             .padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -112,7 +112,7 @@ fun HomeListItem(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Code: ${patient.code}",
+                text = patient.code,
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray
             )

@@ -113,7 +113,7 @@ fun LineChart(
         // Y-LABEL CALCULATION
         val labelViewPortHeightPx = viewPortHeightPx + xLabelLineHeight
         val labelCountExcludingLastLabel =
-            ((labelViewPortHeightPx / (xLabelLineHeight + minLabelSpacingYPx))).toInt() + 4
+            ((labelViewPortHeightPx / (xLabelLineHeight + minLabelSpacingYPx))).toInt()
 
         val valueIncrement = (maxYValue - minYValue) / labelCountExcludingLastLabel
 

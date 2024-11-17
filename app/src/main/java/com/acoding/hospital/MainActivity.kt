@@ -16,8 +16,11 @@ import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaf
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.acoding.hospital.domain.util.ObserveAsEvents
+import com.acoding.hospital.domain.util.toString
 import com.acoding.hospital.ui.bio.BioScreen
 import com.acoding.hospital.ui.home.HomeListEvent
 import com.acoding.hospital.ui.home.HomeScreen
@@ -31,6 +34,7 @@ import org.koin.androidx.compose.koinViewModel
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        installSplashScreen()
         enableEdgeToEdge()
         setContent {
             HospitalTheme {
@@ -44,7 +48,7 @@ class MainActivity : ComponentActivity() {
                             is LoginEvent.ShowError -> {
                                 Toast.makeText(
                                     this,
-                                    it.message.toString(),
+                                    it.message.toString(context = this),
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
@@ -68,16 +72,21 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun AdaptiveCoinListDetailPain(
+    hospitalId: Int = 0,
     viewModel: HomeViewModel = koinViewModel(),
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     ObserveAsEvents(event = viewModel.event) {
         when (it) {
             is HomeListEvent.Error -> {
-
-
+                Toast.makeText(
+                    context,
+                    it.error.toString(context),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }

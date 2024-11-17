@@ -5,5 +5,5 @@
     <string name="no_internet">No internet connection</string>
     <string name="server_error">something went wrong</string>
     <string name="serialization">Serialization error</string>
-    <string name="unknown_error">Unhandled exception</string>
+    <string name="unknown_error">Wrong email or password</string>
 </resources>

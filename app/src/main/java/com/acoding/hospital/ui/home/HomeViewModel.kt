@@ -1,15 +1,23 @@
 package com.acoding.hospital.ui.home
 
+import android.util.Log
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.acoding.hospital.data.model.Bio
+import com.acoding.hospital.data.model.LoginDataStore
 import com.acoding.hospital.data.model.Patient
+import com.acoding.hospital.data.model.PressureValues
+import com.acoding.hospital.data.model.SugarValues
+import com.acoding.hospital.data.model.TemperatureValues
+import com.acoding.hospital.data.repo.HospitalRepo
 import com.acoding.hospital.domain.util.NetworkError
+import com.acoding.hospital.domain.util.onError
+import com.acoding.hospital.domain.util.onSuccess
 import com.acoding.hospital.helpers.convertToEpochMillis
+import com.acoding.hospital.helpers.getValueBeforeSlash
 import com.acoding.hospital.ui.bio.DataPoint
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
@@ -19,11 +27,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import kotlin.random.Random
 
 @Immutable
 data class HomeListState(
     val isLoading: Boolean = false,
+    val detailsLoading: Boolean = false,
     val patients: List<Patient> = emptyList(),
     val selectedPatient: Patient? = null,
     val patientBio: List<Bio> = emptyList(),
@@ -40,14 +48,19 @@ sealed interface HomeListEvent {
     data class Error(val error: NetworkError) : HomeListEvent
 }
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(
+    private val repo: HospitalRepo
+) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeListState())
     val state = _state
-        .onStart { loadPatients() }
+        .onStart {
+            loadPatients()
+            loadPatientsBio(_state.value.selectedPatient?.id ?: 1)
+        }
         .stateIn(
             viewModelScope,
-            started = SharingStarted.WhileSubscribed(10000L),
+            started = SharingStarted.WhileSubscribed(15000L),
             initialValue = HomeListState()
         )
 
@@ -56,114 +69,107 @@ class HomeViewModel : ViewModel() {
 
     private fun loadPatients() {
         _state.update { it.copy(isLoading = true) }
-        val patient = Patient(
-            id = 0,
-            code = "PT001",
-            name = "Guy Lawrence",
-            address = "theophrastus",
-            age = 42,
-            gender = "Male",
-            phone = "(583) 257-9690",
-            hospitalId = "iisque",
-            sugarStatus = 90
-        )
         viewModelScope.launch {
-            delay(1000L)
-            // val patients = getPatients()
-            val patients = (1..20).map {
-                patient.copy(
-                    id = it,
-                    name = it.toString(),
-                    sugarStatus = Random.nextInt(30, 150)
-                )
-            }
-
-            _state.update {
-                it.copy(
-                    patients = patients.sortedBy { patient -> patient.sugarStatus >= 90 },
-                    selectedPatient = patients.first(),
-                )
-            }
-
-            val bio = Bio(
-                id = 0,
-                patientCode = "PT001",
-                date = "24-10-2024",
-                time = "10:30 AM",
-                avgTemperature = 36.6,
-                pressure = "120/80",
-                sugar = 90,
-                status = "stable",
-                patientId = 1
-            )
-//            loadPatientBio(patient.code)
-
-            _state.update {
-                it.copy(
-                    patientBio = (1..9).map { value ->
-                        bio.copy(
-                            id = value,
-                            patientCode = "PT001",
-                            date = "2024-10-0$value",
-                            time = "0$value:30 AM",
-                            avgTemperature = 36.6,
-                            pressure = "120/80",
-                            sugar = value * 2 + 90,
-                            status = "stable",
-                            patientId = 1
-                        )
-                    },
-                )
-            }
-
-            _state.update { it ->
-                it.copy(
-                    sugarDataPoints = (0..50).map { value ->
-                        DataPoint(
-                            x = value.toFloat(),
-                            y = Random.nextInt(30, 150).toFloat(),
-                            xLabel = value.toString()
-                        )
-                    },
-                    temperatureDataPoints = (0..40).map { value ->
-                        DataPoint(
-                            x = value.toFloat(),
-                            y = Random.nextInt(35, 42).toFloat(),
-                            xLabel = value.toString()
-                        )
-                    },
-                    pressureDataPoints = _state.value.patientBio.map {
-                        DataPoint(
-                            x = it.sugar.toFloat(),
-                            y = it.sugar.toFloat(),
-                            xLabel = DateTimeFormatter
-                                .ofPattern("ha\nM/d")
-                                .format(convertToEpochMillis(it.date, it.time))
+            val user = LoginDataStore.user
+            repo.getPatients(user?.hospitalId ?: 1)
+                .onSuccess { patients ->
+                    Log.i("HomeViewModel", "loadPatients: $patients")
+                    _state.update { it.copy(isLoading = false) }
+                    _state.update {
+                        it.copy(
+                            patients = patients.sortedBy { patient -> patient.healthStatus >= 60 },
+                            selectedPatient = patients.first()
                         )
                     }
-//                    (0..50).map { value ->
-//                        DataPoint(
-//                            x = value.toFloat(),
-//                            y = Random.nextInt(30, 150).toFloat(),
-//                            xLabel = value.toString()
-//                        )
-//                    }
-                    ,
-                    isLoading = false
-                )
-            }
+                }.onError { error ->
+                    _state.update { it.copy(isLoading = false) }
+                    _event.send(HomeListEvent.Error(error))
+                }
         }
     }
 
-    fun clickPatient(patientCode: String) {
-        /*
-                TODO:
-         */
-        _state.update {
+    private fun loadPatientsBio(patientId: Int) {
+        _state.update { it.copy(detailsLoading = true) }
+        viewModelScope.launch {
+            repo.getBio(patientId)
+                .onSuccess { bio ->
+                    Log.i("HomeViewModel", "loadBio: $bio")
+
+
+                    val sugar = bio.map {
+                        SugarValues(
+                            date = it.date,
+                            time = it.time,
+                            sugar = it.bloodSugar
+                        )
+                    }
+                    val pressure = bio.map {
+                        val high = getValueBeforeSlash(it.bloodPressure)
+                        PressureValues(
+                            date = it.date,
+                            time = it.time,
+                            high = high.toInt(),
+                            press = it.bloodPressure
+                        )
+                    }
+                    val temperature = bio.map {
+                        TemperatureValues(
+                            date = it.date,
+                            time = it.time,
+                            temp = it.averageTemperature
+                        )
+                    }
+
+                    _state.update {
+                        it.copy(
+                            patientBio = bio,
+                            sugarDataPoints = sugar.map { value ->
+                                DataPoint(
+                                    x = value.sugar.toFloat(),
+                                    y = value.sugar.toFloat(),
+                                    xLabel = DateTimeFormatter
+                                        .ofPattern("ha\nM/d")
+                                        .format(convertToEpochMillis(value.date, value.time))
+                                )
+                            },
+                            temperatureDataPoints = temperature.map { value ->
+                                DataPoint(
+                                    x = value.temp.toFloat(),
+                                    y = value.temp.toFloat(),
+                                    xLabel = DateTimeFormatter
+                                        .ofPattern("ha\nM/d")
+                                        .format(convertToEpochMillis(value.date, value.time))
+                                )
+                            },
+                            pressureDataPoints = pressure.map { value ->
+                                DataPoint(
+                                    x = value.high.toFloat(),
+                                    y = value.high.toFloat(),
+                                    xLabel = DateTimeFormatter
+                                        .ofPattern("ha\nM/d")
+                                        .format(convertToEpochMillis(value.date, value.time))
+                                )
+
+                            }, detailsLoading = false
+                        )
+                    }
+
+
+                }.onError { error ->
+                    _state.update { it.copy(detailsLoading = false) }
+                    _event.send(HomeListEvent.Error(error))
+                }
+        }
+    }
+
+
+    fun clickPatient(patientId: Int) {
+        _state.update { it ->
             it.copy(
-                selectedPatient = it.patients[Random.nextInt(0, 20)]
+                selectedPatient = it.patients.find { it.id == patientId }
             )
         }
+        loadPatientsBio(patientId)
     }
 
     fun filterByDate(startDate: LocalDate, endDate: LocalDate) {
@@ -173,20 +179,18 @@ class HomeViewModel : ViewModel() {
 
         _state.update {
             it.copy(
-                sugarDataPoints = it.patientBio.filter {
-                    it.date in start..end
-                }.map {
+                sugarDataPoints = it.patientBio.filter { paBi ->
+                    paBi.date in start..end
+                }.map { mami ->
                     DataPoint(
-                        x = it.sugar.toFloat(),
-                        y = it.sugar.toFloat(),
+                        x = mami.bloodSugar.toFloat(),
+                        y = mami.bloodSugar.toFloat(),
                         xLabel = DateTimeFormatter
                             .ofPattern("ha\nM/d")
-                            .format(convertToEpochMillis(it.date, it.time))
+                            .format(convertToEpochMillis(mami.date, mami.time))
                     )
                 }
             )
         }
     }
-
-
 }
