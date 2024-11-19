@@ -7,15 +7,14 @@ import androidx.lifecycle.viewModelScope
 import com.acoding.hospital.data.model.Bio
 import com.acoding.hospital.data.model.LoginDataStore
 import com.acoding.hospital.data.model.Patient
-import com.acoding.hospital.data.model.PressureValues
-import com.acoding.hospital.data.model.SugarValues
-import com.acoding.hospital.data.model.TemperatureValues
+import com.acoding.hospital.data.model.toPressureValues
+import com.acoding.hospital.data.model.toSugarValues
+import com.acoding.hospital.data.model.toTemperatureValues
 import com.acoding.hospital.data.repo.HospitalRepo
 import com.acoding.hospital.domain.util.NetworkError
 import com.acoding.hospital.domain.util.onError
 import com.acoding.hospital.domain.util.onSuccess
 import com.acoding.hospital.helpers.convertToEpochMillis
-import com.acoding.hospital.helpers.getValueBeforeSlash
 import com.acoding.hospital.ui.bio.DataPoint
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +30,7 @@ import java.time.format.DateTimeFormatter
 @Immutable
 data class HomeListState(
     val isLoading: Boolean = false,
+    var tabTypeIndex: Int = 0,
     val detailsLoading: Boolean = false,
     val patients: List<Patient> = emptyList(),
     val selectedPatient: Patient? = null,
@@ -95,53 +95,33 @@ class HomeViewModel(
                 .onSuccess { bio ->
                     Log.i("HomeViewModel", "loadBio: $bio")
 
-
-                    val sugar = bio.map {
-                        SugarValues(
-                            date = it.date,
-                            time = it.time,
-                            sugar = it.bloodSugar
-                        )
-                    }
-                    val pressure = bio.map {
-                        val high = getValueBeforeSlash(it.bloodPressure)
-                        PressureValues(
-                            date = it.date,
-                            time = it.time,
-                            high = high.toInt(),
-                            press = it.bloodPressure
-                        )
-                    }
-                    val temperature = bio.map {
-                        TemperatureValues(
-                            date = it.date,
-                            time = it.time,
-                            temp = it.averageTemperature
-                        )
-                    }
+                    val sugar = bio.map { it.toSugarValues() }
+                    val pressure = bio.map { it.toPressureValues() }
+                    val temperature = bio.map { it.toTemperatureValues() }
 
                     _state.update {
                         it.copy(
                             patientBio = bio,
-                            sugarDataPoints = sugar.map { value ->
+                            sugarDataPoints = bio.map { value ->
                                 DataPoint(
-                                    x = value.sugar.toFloat(),
-                                    y = value.sugar.toFloat(),
+                                    x = value.bloodSugar.toFloat(),
+                                    y = value.bloodSugar.toFloat(),
                                     xLabel = DateTimeFormatter
                                         .ofPattern("ha\nM/d")
                                         .format(convertToEpochMillis(value.date, value.time))
                                 )
                             },
-                            temperatureDataPoints = temperature.map { value ->
+                            temperatureDataPoints = bio.map { value ->
                                 DataPoint(
-                                    x = value.temp.toFloat(),
-                                    y = value.temp.toFloat(),
+                                    x = value.averageTemperature.toFloat(),
+                                    y = value.averageTemperature.toFloat(),
                                     xLabel = DateTimeFormatter
                                         .ofPattern("ha\nM/d")
                                         .format(convertToEpochMillis(value.date, value.time))
                                 )
                             },
                             pressureDataPoints = pressure.map { value ->
+                                Log.i("HomeViewModel Pressure list: ", pressure.toString())
                                 DataPoint(
                                     x = value.high.toFloat(),
                                     y = value.high.toFloat(),
@@ -163,7 +143,7 @@ class HomeViewModel(
     }
 
 
-    fun clickPatient(patientId: Int) {
+    fun clickPatient(patientId: Int, tabTypeIndex: Int) {
         _state.update { it ->
             it.copy(
                 selectedPatient = it.patients.find { it.id == patientId }
@@ -172,6 +152,10 @@ class HomeViewModel(
         loadPatientsBio(patientId)
     }
 
+
+    /*
+        TODO: make it for each graph
+     */
     fun filterByDate(startDate: LocalDate, endDate: LocalDate) {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val start = startDate.format(formatter)

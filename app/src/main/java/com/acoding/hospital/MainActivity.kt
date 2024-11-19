@@ -98,8 +98,8 @@ fun AdaptiveCoinListDetailPain(
         listPane = {
             HomeScreen(
                 state = state,
-                onClick = {
-                    viewModel.clickPatient(it)
+                onClick = { it, index ->
+                    viewModel.clickPatient(it, index)
                     navigator.navigateTo(
                         pane = ListDetailPaneScaffoldRole.Detail
                     )
@@ -107,7 +107,6 @@ fun AdaptiveCoinListDetailPain(
             )
         },
         detailPane = {
-
             BioScreen(
                 state = state,
                 filter = { start, end ->

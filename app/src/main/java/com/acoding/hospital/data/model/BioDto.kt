@@ -1,5 +1,7 @@
 package com.acoding.hospital.data.model
 
+import com.acoding.hospital.helpers.getValueAfterSlash
+import com.acoding.hospital.helpers.getValueBeforeSlash
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -61,7 +63,7 @@ data class PressureValues(
     val date: String,
     val time: String,
     val high: Int,
-    val press: String
+    val low: Int
 )
 
 data class TemperatureValues(
@@ -69,3 +71,30 @@ data class TemperatureValues(
     val time: String,
     val temp: Double
 )
+
+fun Bio.toSugarValues(): SugarValues {
+    return SugarValues(
+        date = date,
+        time = time,
+        sugar = bloodSugar
+    )
+}
+
+fun Bio.toPressureValues(): PressureValues {
+    val high = getValueBeforeSlash(bloodPressure)
+    val low = getValueAfterSlash(bloodPressure)
+    return PressureValues(
+        date = date,
+        time = time,
+        high = high.toInt(),
+        low = low.toInt()
+    )
+}
+
+fun Bio.toTemperatureValues(): TemperatureValues {
+    return TemperatureValues(
+        date = date,
+        time = time,
+        temp = averageTemperature
+    )
+}

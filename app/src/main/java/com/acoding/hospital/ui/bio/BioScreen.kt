@@ -2,7 +2,6 @@ package com.acoding.hospital.ui.bio
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,17 +9,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,12 +36,12 @@ import com.acoding.hospital.ui.home.HomeListState
 import com.acoding.hospital.ui.theme.greenBackground
 import java.time.LocalDate
 
-enum class BioType {
-    Sugar,
-    Pressure,
-    Temperature,
-//    Statistics
-}
+//enum class BioType {
+//    Sugar,
+//    Pressure,
+//    Temperature,
+////    Statistics
+//}
 
 @Composable
 fun BioScreen(
@@ -57,12 +51,12 @@ fun BioScreen(
 ) {
     val contentColor = if (!isSystemInDarkTheme()) Color.Black else Color.White
 
-    val chosen = remember { mutableStateOf(BioType.Sugar) }
-    var isExpanded by remember { mutableStateOf(false) }
-    val dataPointsList = when (chosen.value) {
-        BioType.Sugar -> state.sugarDataPoints
-        BioType.Pressure -> state.pressureDataPoints
-        BioType.Temperature -> state.temperatureDataPoints
+//    val chosen = remember { mutableStateOf(BioType.Sugar) }
+//    var isExpanded by remember { mutableStateOf(false) }
+    val dataPointsList = when (state.tabTypeIndex) {
+        0 -> state.sugarDataPoints
+        1 -> state.pressureDataPoints
+        else -> state.temperatureDataPoints
 //        BioType.Statistics -> state.sugarDataPoints
     }
 
@@ -222,65 +216,65 @@ fun BioScreen(
                     filter(startDate, endDate)
                 }
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .clickable { isExpanded = !isExpanded }
-                        .padding(vertical = 12.dp, horizontal = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "${chosen.value.name} Graph",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Light,
-                        color = contentColor,
-                        modifier = Modifier
-                            .weight(1f)
-                    )
-                    Icon(
-                        imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                        contentDescription = null,
-                        modifier = Modifier
-                    )
-                }
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(horizontal = 16.dp)
+//                        .clip(RoundedCornerShape(12.dp))
+//                        .clickable { isExpanded = !isExpanded }
+//                        .padding(vertical = 12.dp, horizontal = 8.dp),
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Text(
+//                        text = "${chosen.value.name} Graph",
+//                        fontSize = 20.sp,
+//                        fontWeight = FontWeight.Light,
+//                        color = contentColor,
+//                        modifier = Modifier
+//                            .weight(1f)
+//                    )
+//                    Icon(
+//                        imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+//                        contentDescription = null,
+//                        modifier = Modifier
+//                    )
+//                }
 
-                AnimatedVisibility(
-                    visible = isExpanded,
-                    modifier = Modifier
-                        .background(Color.Transparent)
-                        .padding(horizontal = 16.dp)
-                ) {
-
-                    val scrollState = rememberScrollState()
-                    Column(
-                        modifier = Modifier
-                            .padding(top = 12.dp)
-                            .fillMaxWidth()
-                            .height(180.dp)
-                            .verticalScroll(scrollState)
-                    ) {
-                        BioType.entries.forEach {
-                            Text(
-                                text = it.name,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Light,
-                                color = contentColor,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 4.dp, horizontal = 12.dp)
-                                    .clip(MaterialTheme.shapes.medium)
-                                    .background(MaterialTheme.colorScheme.primary.copy(alpha = (0.1f)))
-                                    .clickable {
-                                        chosen.value = it
-                                        isExpanded = false
-                                    }
-                                    .padding(12.dp)
-                            )
-                        }
-                    }
-                }
+//                AnimatedVisibility(
+//                    visible = isExpanded,
+//                    modifier = Modifier
+//                        .background(Color.Transparent)
+//                        .padding(horizontal = 16.dp)
+//                ) {
+//
+//                    val scrollState = rememberScrollState()
+//                    Column(
+//                        modifier = Modifier
+//                            .padding(top = 12.dp)
+//                            .fillMaxWidth()
+//                            .height(180.dp)
+//                            .verticalScroll(scrollState)
+//                    ) {
+//                        BioType.entries.forEach {
+//                            Text(
+//                                text = it.name,
+//                                fontSize = 14.sp,
+//                                fontWeight = FontWeight.Light,
+//                                color = contentColor,
+//                                modifier = Modifier
+//                                    .fillMaxWidth()
+//                                    .padding(vertical = 4.dp, horizontal = 12.dp)
+//                                    .clip(MaterialTheme.shapes.medium)
+//                                    .background(MaterialTheme.colorScheme.primary.copy(alpha = (0.1f)))
+//                                    .clickable {
+//                                        chosen.value = it
+//                                        isExpanded = false
+//                                    }
+//                                    .padding(12.dp)
+//                            )
+//                        }
+//                    }
+//                }
 
 
                 AnimatedVisibility(
