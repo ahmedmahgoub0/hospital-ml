@@ -1,9 +1,23 @@
 <resources>
-    <string name="app_name">hospital</string>
+    <string name="app_name" translatable="false">hospital</string>
     <string name="request_timeout">Request Timeout</string>
     <string name="too_many_requests">Too many requests</string>
     <string name="no_internet">No internet connection</string>
     <string name="server_error">something went wrong</string>
     <string name="serialization">Serialization error</string>
     <string name="unknown_error">Wrong email or password</string>
+    <string name="sugar">Sugar</string>
+    <string name="pressure">Pressure</string>
+    <string name="temperature">Temperature</string>
+    <string name="no_patients">No Patients</string>
+    <string name="normal">Normal</string>
+    <string name="critical">Critical</string>
+    <string name="age">Age</string>
+    <string name="code">Code</string>
+    <string name="welcome_back">Welcome Back!</string>
+    <string name="sign_in_to_continue">Sign In To Continue.</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="contact_us_if_you_have_any_issues">Contact us if you have any issues.</string>
 </resources>

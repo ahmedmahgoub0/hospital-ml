@@ -9,9 +9,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.acoding.hospital.R
 
+val Inter = FontFamily(
+    Font(
+        resId = R.font.inter_regular,
+        weight = FontWeight.Normal
+    ),
+    Font(
+        resId = R.font.inter_bold,
+        weight = FontWeight.Bold,
+    )
+)
+
 val SpaceMono = FontFamily(
     Font(
-        resId = R.font.space_mono_regular,
+        resId = R.font.inter_regular,
         weight = FontWeight.Normal
     ),
     Font(
@@ -20,7 +31,7 @@ val SpaceMono = FontFamily(
         style = FontStyle.Italic
     ),
     Font(
-        resId = R.font.space_mono_bold,
+        resId = R.font.inter_bold,
         weight = FontWeight.Bold
     ),
     Font(

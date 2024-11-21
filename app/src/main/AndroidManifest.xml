@@ -7,6 +7,7 @@
     <application
         android:name=".HospitalApplication"
         android:allowBackup="true"
+        android:configChanges="locale|layoutDirection|screenLayout|smallestScreenSize|screenSize"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"

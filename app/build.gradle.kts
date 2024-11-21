@@ -49,6 +49,9 @@ dependencies {
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose)
+    implementation(libs.androidx.navigation.common.ktx)
+    implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.androidx.datastore.core.android)
     debugImplementation(libs.bundles.compose.debug)
 
     coreLibraryDesugaring(libs.desugar.jdk.libs)
@@ -60,6 +63,7 @@ dependencies {
 
     testImplementation(libs.junit)
 
+    implementation(libs.androidx.navigation)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.acoding.hospital.data.datastore.Language
+import com.acoding.hospital.data.datastore.UserPreferences
 import com.acoding.hospital.data.model.Bio
 import com.acoding.hospital.data.model.LoginDataStore
 import com.acoding.hospital.data.model.Patient
@@ -37,7 +39,8 @@ data class HomeListState(
     val patientBio: List<Bio> = emptyList(),
     val sugarDataPoints: List<DataPoint> = emptyList(),
     val temperatureDataPoints: List<DataPoint> = emptyList(),
-    val pressureDataPoints: List<DataPoint> = emptyList()
+    val pressureDataPoints: List<DataPoint> = emptyList(),
+    val userPreferences: UserPreferences? = null,
 )
 
 sealed interface HomeListAction {
@@ -66,6 +69,18 @@ class HomeViewModel(
 
     private val _event = Channel<HomeListEvent>()
     val event = _event.receiveAsFlow()
+
+    init {
+        viewModelScope.launch {
+            repo.userDate.collect { userPreferences ->
+                _state.update {
+                    it.copy(
+                        userPreferences = userPreferences
+                    )
+                }
+            }
+        }
+    }
 
     private fun loadPatients() {
         _state.update { it.copy(isLoading = true) }
@@ -152,6 +167,14 @@ class HomeViewModel(
         loadPatientsBio(patientId)
     }
 
+    fun setLanguage(language: Language) {
+        viewModelScope.launch {
+            repo.setLanguage(language)
+            _state.update {
+                it.copy(userPreferences = it.userPreferences?.copy(language = language))
+            }
+        }
+    }
 
     /*
         TODO: make it for each graph

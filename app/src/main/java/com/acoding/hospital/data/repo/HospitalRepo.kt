@@ -1,5 +1,11 @@
 package com.acoding.hospital.data.repo
 
+import androidx.datastore.core.DataStore
+import com.acoding.hospital.data.datastore.Language
+import com.acoding.hospital.data.datastore.UserPreferences
+import com.acoding.hospital.data.datastore.UserPreferencesData
+import com.acoding.hospital.data.datastore.toData
+import com.acoding.hospital.data.datastore.toDomain
 import com.acoding.hospital.data.model.BaseResponse
 import com.acoding.hospital.data.model.Bio
 import com.acoding.hospital.data.model.BioDto
@@ -18,6 +24,9 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -38,6 +47,11 @@ data class Loginbody(
 
 
 interface HospitalRepo {
+
+    val userDate: Flow<UserPreferences>
+
+    suspend fun setLanguage(language: Language)
+
     suspend fun getPatients(hospitalId: Int): Result<List<Patient>, NetworkError>
 
     suspend fun getBio(patientId: Int): Result<List<Bio>, NetworkError>
@@ -47,8 +61,19 @@ interface HospitalRepo {
 }
 
 class HospitalRepoImpl(
-    private val client: HttpClient
+    private val client: HttpClient,
+    private val dataStore: DataStore<UserPreferencesData>,
 ) : HospitalRepo {
+
+    override val userDate: Flow<UserPreferences> =
+        dataStore.data.distinctUntilChanged().map { it.toDomain() }
+
+    override suspend fun setLanguage(language: Language) {
+        dataStore.updateData {
+            it.copy(languageData = language.toData())
+        }
+    }
+
 
     override suspend fun getPatients(hospitalId: Int): Result<List<Patient>, NetworkError> {
         return safeCall<BaseResponse<List<PatientDto>>> {

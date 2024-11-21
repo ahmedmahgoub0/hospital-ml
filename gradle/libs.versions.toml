@@ -14,6 +14,9 @@ koin = "3.5.6"
 coreSplashscreen = "1.2.0-alpha02"
 material3-adaptive = "1.0.0"
 compose-material-icons-extended = "1.7.5"
+navigationCommonKtx = "2.8.4"
+navigationRuntimeKtx = "2.8.4"
+datastoreCoreAndroid = "1.1.1"
 
 [libraries]
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
@@ -44,6 +47,10 @@ androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-ru
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 androidx-compose-material3-adaptive-navigation = { module = "androidx.compose.material3.adaptive:adaptive-navigation", version.ref = "material3-adaptive" }
 compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "compose-material-icons-extended" }
+androidx-navigation-common-ktx = { group = "androidx.navigation", name = "navigation-common-ktx", version.ref = "navigationCommonKtx" }
+androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
+androidx-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationRuntimeKtx" }
+androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version.ref = "datastoreCoreAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
