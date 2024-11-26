@@ -149,6 +149,9 @@ fun AdaptiveCoinListDetailPain(
                 state = state,
                 filter = { start, end ->
                     viewModel.filterByDate(start, end)
+                },
+                onBack = {
+                    navigator.navigateBack()
                 }
             )
         }

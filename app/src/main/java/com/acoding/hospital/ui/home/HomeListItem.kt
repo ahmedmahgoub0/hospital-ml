@@ -53,55 +53,60 @@ fun HomeListItem(
         else -> stringResource(R.string.critical)
     }
 
-//    Row(
-//        modifier = modifier
-//            .fillMaxWidth()
-//            .clickable { onCLick(patient.code) }
-//            .padding(8.dp),
-//        horizontalArrangement = Arrangement.spacedBy(16.dp)
-//    ) {
-//        Column(modifier = Modifier.weight(1f)) {
-//            Text(
-//                text = patient.name,
-//                fontSize = 20.sp,
-//                fontWeight = FontWeight.Bold,
-//                color = contentColor
-//            )
-//            Text(
-//                text = patient.gender,
-//                fontSize = 14.sp,
-//                fontWeight = FontWeight.Light,
-//                color = contentColor
-//            )
-//            Text(
-//                text = patient.age.toString(),
-//                fontSize = 14.sp,
-//                fontWeight = FontWeight.Light,
-//                color = contentColor
-//            )
-//        }
-//        Column(
-//            horizontalAlignment = Alignment.End,
-//            modifier = Modifier
-//                .align(Alignment.Bottom)
-//                .padding(bottom = 8.dp)
-//        ) {
-//            Row(
-//                modifier = modifier
-//                    .clip(RoundedCornerShape(100f))
-//                    .background(criticalColor)
-//                    .padding(horizontal = 8.dp)
-//            ) {
-//                Text(
-//                    text = critical,
-//                    color = MaterialTheme.colorScheme.onError,
-//                    fontSize = 14.sp,
-//                    fontWeight = FontWeight.Medium
-//                )
-//            }
-//        }
+    /** previous code
+    //    Row(
+    //        modifier = modifier
+    //            .fillMaxWidth()
+    //            .clickable { onCLick(patient.code) }
+    //            .padding(8.dp),
+    //        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    //    ) {
+    //        Column(modifier = Modifier.weight(1f)) {
+    //            Text(
+    //                text = patient.name,
+    //                fontSize = 20.sp,
+    //                fontWeight = FontWeight.Bold,
+    //                color = contentColor
+    //            )
+    //            Text(
+    //                text = patient.gender,
+    //                fontSize = 14.sp,
+    //                fontWeight = FontWeight.Light,
+    //                color = contentColor
+    //            )
+    //            Text(
+    //                text = patient.age.toString(),
+    //                fontSize = 14.sp,
+    //                fontWeight = FontWeight.Light,
+    //                color = contentColor
+    //            )
+    //        }
+    //        Column(
+    //            horizontalAlignment = Alignment.End,
+    //            modifier = Modifier
+    //                .align(Alignment.Bottom)
+    //                .padding(bottom = 8.dp)
+    //        ) {
+    //            Row(
+    //                modifier = modifier
+    //                    .clip(RoundedCornerShape(100f))
+    //                    .background(criticalColor)
+    //                    .padding(horizontal = 8.dp)
+    //            ) {
+    //                Text(
+    //                    text = critical,
+    //                    color = MaterialTheme.colorScheme.onError,
+    //                    fontSize = 14.sp,
+    //                    fontWeight = FontWeight.Medium
+    //                )
+    //            }
+    //        }
 
-//    }
+    //    }
+
+
+     */
+
 
     Row(
         modifier = modifier

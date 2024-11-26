@@ -12,10 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -275,8 +272,8 @@ fun HomeScreen(
                     modifier = Modifier
                 ) {
                     Icon(
-                        imageVector = Icons.Outlined.Translate,
-                        contentDescription = "notify",
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_language),
+                        contentDescription = "language",
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
@@ -368,7 +365,7 @@ fun PatientList(
                     modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null),
                     onCLick = { onClick(patient.id, tabTypeIndex) }
                 )
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+//                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
             }
 
         }
