@@ -221,7 +221,7 @@ fun HomeScreen(
                     modifier = Modifier
                         .padding(start = 16.dp)
                         .size(28.dp),
-                    tint = Color.Black
+                    tint = Color.Unspecified
                 )
 
                 Text(
@@ -235,7 +235,7 @@ fun HomeScreen(
                         letterSpacing = 0.1.sp,
                         fontWeight = FontWeight.SemiBold
                     ),
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = MaterialTheme.colorScheme.primary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -250,7 +250,7 @@ fun HomeScreen(
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.ic_search),
                         contentDescription = "search",
-                        tint = MaterialTheme.colorScheme.onBackground
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
 
@@ -263,7 +263,7 @@ fun HomeScreen(
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.ic_language),
                         contentDescription = "language",
-                        tint = MaterialTheme.colorScheme.onBackground
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -284,7 +284,7 @@ fun HomeScreen(
                         text = {
                             Text(
                                 text = title,
-                                color = if (selected) MaterialTheme.colorScheme.onBackground
+                                color = if (selected) MaterialTheme.colorScheme.primary
                                 else MaterialTheme.colorScheme.onBackground,
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontSize = if (selected) 15.sp else 13.sp,
