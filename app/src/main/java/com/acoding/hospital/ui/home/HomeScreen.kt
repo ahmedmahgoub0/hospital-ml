@@ -134,6 +134,7 @@ fun HomeScreen(
     state: HomeListState,
     onClick: (patientId: Int, tabTypeIndex: Int) -> Unit,
     onLanguageChanged: (Language) -> Unit,
+    setTabIndexType: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -289,7 +290,7 @@ fun HomeScreen(
                         modifier = Modifier.background(Color.White),
                         selected = selectedTabIndex == index,
                         onClick = {
-                            state.tabTypeIndex = selectedTabIndex
+                            setTabIndexType(index)
                             selectedTabIndex = index
                         },
                         text = {

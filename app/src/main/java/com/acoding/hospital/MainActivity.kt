@@ -141,6 +141,9 @@ fun AdaptiveCoinListDetailPain(
                 },
                 onLanguageChanged = {
                     viewModel.setLanguage(it)
+                },
+                setTabIndexType = {
+                    viewModel.setTabTypeIndex(it)
                 }
             )
         },

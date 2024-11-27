@@ -12,7 +12,7 @@ fun MainNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
-    val startDestination = "onboarding"
+    val startDestination = "login"
 
     NavHost(
         modifier = modifier,

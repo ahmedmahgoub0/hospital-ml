@@ -21,4 +21,6 @@
     <string name="password">كلمة المرور</string>
     <string name="login">الدخول</string>
     <string name="contact_us_if_you_have_any_issues">إذا واجهتك مشكلة اتصل بنا.</string>
+    <string name="pressure_high">hypertension</string>
+    <string name="pressure_low">hypotension</string>
 </resources>

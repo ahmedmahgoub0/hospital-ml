@@ -20,4 +20,6 @@
     <string name="password">Password</string>
     <string name="login">Login</string>
     <string name="contact_us_if_you_have_any_issues">Contact us if you have any issues.</string>
+    <string name="pressure_high">Systolic</string>
+    <string name="pressure_low">Diastolic</string>
 </resources>

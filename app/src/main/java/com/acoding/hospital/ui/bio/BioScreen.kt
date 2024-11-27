@@ -1,7 +1,6 @@
 package com.acoding.hospital.ui.bio
 
 import androidx.annotation.DrawableRes
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,18 +28,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -73,15 +66,15 @@ fun BioScreen(
     onBack: () -> Unit
 ) {
     val contentColor = if (!isSystemInDarkTheme()) Color.Black else Color.White
-
-//    val chosen = remember { mutableStateOf(BioType.Sugar) }
-//    var isExpanded by remember { mutableStateOf(false) }
-    val dataPointsList = when (state.tabTypeIndex) {
-        0 -> state.sugarDataPoints
-        1 -> state.pressureDataPoints
-        else -> state.temperatureDataPoints
-//        BioType.Statistics -> state.sugarDataPoints
-    }
+    /**    val chosen = remember { mutableStateOf(BioType.Sugar) }
+    //    var isExpanded by remember { mutableStateOf(false) }
+    //    val dataPointsList = when (state.tabTypeIndex) {
+    //        0 -> state.sugarDataPoints
+    //        1 -> state.pressureDataPoints
+    //        else -> state.temperatureDataPoints
+    ////        BioType.Statistics -> state.sugarDataPoints
+    //    }
+     */
 
     if (state.detailsLoading) {
         Box(
@@ -92,8 +85,17 @@ fun BioScreen(
         }
     } else {
         val patient = state.selectedPatient
-
         if (patient != null) {
+            /**            val modelProducer = remember { CartesianChartModelProducer() }
+            //            LaunchedEffect(Unit) {
+            //                withContext(Dispatchers.Default) {
+            //                    modelProducer.runTransaction {
+            //                        lineSeries { series(x, x.map { Random.nextFloat() * 6 }) }
+            //                    }
+            //                }
+            //            }
+             */
+
             Column(
                 modifier = modifier
                     .fillMaxSize()
@@ -104,7 +106,7 @@ fun BioScreen(
                     if (patient.healthStatus < 60) MaterialTheme.colorScheme.error
                     else greenBackground
                 val critical = if (patient.healthStatus < 60) "Critical" else "Normal"
-
+                val context = LocalContext.current
 
                 /** Box for back button and patient profile title */
                 Box(
@@ -394,8 +396,10 @@ fun BioScreen(
                 /**
                  * Line chart previous code
 
+
                 AnimatedVisibility(
-                modifier = modifier.padding(horizontal = 6.dp),
+                modifier = modifier
+                .padding(horizontal = 6.dp),
                 visible = dataPointsList.isNotEmpty()
                 ) {
                 var selectedDataPoint by remember {
@@ -407,11 +411,12 @@ fun BioScreen(
                 var totalChartWidth by remember {
                 mutableFloatStateOf(0f)
                 }
-                val amountOfVisibleDataPoints = if (labelWidth > 0) {
-                ((totalChartWidth - 2.5 * labelWidth) / labelWidth).toInt()
-                } else {
-                0
-                }
+                val amountOfVisibleDataPoints = 24
+                //                    val amountOfVisibleDataPoints = if (labelWidth > 0) {
+                //                        ((totalChartWidth - 0.5 * labelWidth) / labelWidth).toInt()
+                //                    } else {
+                //                        0
+                //                    }
                 val startIndex =
                 (dataPointsList.lastIndex - amountOfVisibleDataPoints)
                 .coerceAtLeast(0)
@@ -435,7 +440,8 @@ fun BioScreen(
                 unit = "",
                 modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(16 / 14f)
+                .horizontalScroll(rememberScrollState())
+                .aspectRatio(16 / 16f)
                 .onSizeChanged { totalChartWidth = it.width.toFloat() },
                 selectedDataPoint = selectedDataPoint,
                 onSelectedDataPoint = {
@@ -447,11 +453,84 @@ fun BioScreen(
                  */
 
 
+                /** Chart vico */
+                /**
+                 *    TODO: VicoChart number 1- 7- 9
+
+
+                val marker = rememberMarker(
+                labelPosition = DefaultCartesianMarker.LabelPosition.Top,
+                showIndicator = true
+                )
+                CartesianChartHost(
+                chart =
+                rememberCartesianChart(
+                rememberLineCartesianLayer(
+                LineCartesianLayer.LineProvider.series(
+                LineCartesianLayer.rememberLine(
+                remember {
+                LineCartesianLayer.LineFill.single(
+                fill(
+                Color(
+                0xFF247CFF
+                )
+                )
+                )
+                },
+                thickness = 2.dp,
+                dataLabelVerticalPosition = VerticalPosition.Top,
+                )
+                )
+                ),
+                getXStep = { cartesianChartModel -> 1.0 },
+                startAxis = VerticalAxis.rememberStart(),
+                bottomAxis = HorizontalAxis.rememberBottom(
+                guideline = null,
+                itemPlacer = remember { HorizontalAxis.ItemPlacer.segmented() },
+                ),
+                marker = marker,
+                layerPadding = cartesianLayerPadding(
+                scalableStart = 0.dp,
+                scalableEnd = 0.dp
+                ),
+
+                persistentMarkers = rememberExtraLambda(marker) { marker at 5f },
+                ),
+                modelProducer = modelProducer,
+                modifier = Modifier
+                .padding(
+                horizontal = 8.dp,
+                vertical = 36.dp
+                )
+                .height(340.dp),
+                zoomState = rememberVicoZoomState(zoomEnabled = false),
+                )
+                 */
+
+
+                /** chart two
+                 */
+
+                when (state.tabTypeIndex) {
+                    0 -> SugarGraph(
+                        state = state,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    1 -> PressureGraph(
+                        state = state,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    else -> TemperatureGraph(
+                        state = state,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
         }
     }
 }
-
 
 @Composable
 fun PatientInfo(

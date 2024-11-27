@@ -1,9 +1,9 @@
 package com.acoding.hospital.helpers
 
-fun getValueBeforeSlash(input: String): String {
-    return input.substringBefore("/")
+fun String.getValueBeforeSlash(): String {
+    return this.substringBefore("/")
 }
 
-fun getValueAfterSlash(input: String): String {
-    return input.substringAfter("/")
+fun String.getValueAfterSlash(): String {
+    return this.substringAfter("/")
 }

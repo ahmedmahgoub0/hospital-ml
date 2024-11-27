@@ -81,8 +81,8 @@ fun Bio.toSugarValues(): SugarValues {
 }
 
 fun Bio.toPressureValues(): PressureValues {
-    val high = getValueBeforeSlash(bloodPressure)
-    val low = getValueAfterSlash(bloodPressure)
+    val high = this.bloodPressure.getValueBeforeSlash()
+    val low = this.bloodPressure.getValueAfterSlash()
     return PressureValues(
         date = date,
         time = time,

@@ -17,7 +17,8 @@ import com.acoding.hospital.domain.util.NetworkError
 import com.acoding.hospital.domain.util.onError
 import com.acoding.hospital.domain.util.onSuccess
 import com.acoding.hospital.helpers.convertToEpochMillis
-import com.acoding.hospital.ui.bio.DataPoint
+import com.acoding.hospital.helpers.getValueAfterSlash
+import com.acoding.hospital.helpers.getValueBeforeSlash
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -37,10 +38,12 @@ data class HomeListState(
     val patients: List<Patient> = emptyList(),
     val selectedPatient: Patient? = null,
     val patientBio: List<Bio> = emptyList(),
-    val sugarDataPoints: List<DataPoint> = emptyList(),
-    val temperatureDataPoints: List<DataPoint> = emptyList(),
-    val pressureDataPoints: List<DataPoint> = emptyList(),
+    val sugarDataPoints: List<Double> = emptyList(),
+    val temperatureDataPoints: List<Double> = emptyList(),
+    val pressureHighDataPoints: List<Double> = emptyList(),
+    val pressureLowDataPoints: List<Double> = emptyList(),
     val userPreferences: UserPreferences? = null,
+    val datePoints: List<String> = emptyList()
 )
 
 sealed interface HomeListAction {
@@ -103,6 +106,14 @@ class HomeViewModel(
         }
     }
 
+    fun setTabTypeIndex(selected: Int) {
+        _state.update {
+            it.copy(
+                tabTypeIndex = selected
+            )
+        }
+    }
+
     private fun loadPatientsBio(patientId: Int) {
         _state.update { it.copy(detailsLoading = true) }
         viewModelScope.launch {
@@ -116,36 +127,51 @@ class HomeViewModel(
 
                     _state.update {
                         it.copy(
-                            patientBio = bio,
-                            sugarDataPoints = bio.map { value ->
-                                DataPoint(
-                                    x = value.bloodSugar.toFloat(),
-                                    y = value.bloodSugar.toFloat(),
-                                    xLabel = DateTimeFormatter
-                                        .ofPattern("ha\nM/d")
-                                        .format(convertToEpochMillis(value.date, value.time))
-                                )
+                            patientBio = patientBios,
+                            //patientBio = bio,
+                            datePoints = patientBios.takeLast(24).map { value ->
+                                DateTimeFormatter
+                                    .ofPattern("ha\nM/d")
+                                    .format(convertToEpochMillis(value.date, value.time))
                             },
-                            temperatureDataPoints = bio.map { value ->
-                                DataPoint(
-                                    x = value.averageTemperature.toFloat(),
-                                    y = value.averageTemperature.toFloat(),
-                                    xLabel = DateTimeFormatter
-                                        .ofPattern("ha\nM/d")
-                                        .format(convertToEpochMillis(value.date, value.time))
-                                )
+                            sugarDataPoints = patientBios.takeLast(24).map { value ->
+                                /**                             DataPoint(
+                                //                                    x = value.bloodSugar.toFloat(),
+                                //                                    y = value.bloodSugar.toFloat(),
+                                //                                    xLabel = DateTimeFormatter
+                                //                                        .ofPattern("ha\nM/d")
+                                //                                        .format(convertToEpochMillis(value.date, value.time))
+                                //                                )
+                                 */
+                                value.bloodSugar.toDouble()
                             },
-                            pressureDataPoints = pressure.map { value ->
-                                Log.i("HomeViewModel Pressure list: ", pressure.toString())
-                                DataPoint(
-                                    x = value.high.toFloat(),
-                                    y = value.high.toFloat(),
-                                    xLabel = DateTimeFormatter
-                                        .ofPattern("ha\nM/d")
-                                        .format(convertToEpochMillis(value.date, value.time))
-                                )
-
-                            }, detailsLoading = false
+                            temperatureDataPoints = patientBios.takeLast(24).map { value ->
+                                /**                               DataPoint(
+                                //                                    x = value.averageTemperature.toFloat(),
+                                //                                    y = value.averageTemperature.toFloat(),
+                                //                                    xLabel = DateTimeFormatter
+                                //                                        .ofPattern("ha\nM/d")
+                                //                                        .format(convertToEpochMillis(value.date, value.time))
+                                //                                //
+                                )*/
+                                value.averageTemperature.toDouble()
+                            },
+                            pressureHighDataPoints = patientBios.takeLast(24).map { value ->
+                                /**                                Log.i("HomeViewModel Pressure list: ", pressure.toString())
+                                //                                DataPoint(
+                                //                                    x = value.high.toFloat(),
+                                //                                    y = value.high.toFloat(),
+                                //                                    xLabel = DateTimeFormatter
+                                //                                        .ofPattern("ha\nM/d")
+                                //                                        .format(convertToEpochMillis(value.date, value.time))
+                                //                                )
+                                 */
+                                value.bloodPressure.getValueBeforeSlash().toDouble()
+                            },
+                            pressureLowDataPoints = patientBios.takeLast(24).map { value ->
+                                value.bloodPressure.getValueAfterSlash().toDouble()
+                            },
+                            detailsLoading = false
                         )
                     }
 
@@ -184,20 +210,485 @@ class HomeViewModel(
         val start = startDate.format(formatter)
         val end = endDate.format(formatter)
 
-        _state.update {
-            it.copy(
-                sugarDataPoints = it.patientBio.filter { paBi ->
-                    paBi.date in start..end
-                }.map { mami ->
-                    DataPoint(
-                        x = mami.bloodSugar.toFloat(),
-                        y = mami.bloodSugar.toFloat(),
-                        xLabel = DateTimeFormatter
-                            .ofPattern("ha\nM/d")
-                            .format(convertToEpochMillis(mami.date, mami.time))
-                    )
-                }
-            )
-        }
+//        _state.update {
+//            it.copy(
+//                sugarDataPoints = it.patientBio.filter { paBi ->
+//                    paBi.date in start..end
+//                }.map { mami ->
+//                    DataPoint(
+//                        x = mami.bloodSugar.toFloat(),
+//                        y = mami.bloodSugar.toFloat(),
+//                        xLabel = DateTimeFormatter
+//                            .ofPattern("ha\nM/d")
+//                            .format(convertToEpochMillis(mami.date, mami.time))
+//                    )
+//                }
+//            )
+//        }
     }
 }
+
+val patientBios = listOf(
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-27",
+        time = "13:00:00",
+        averageTemperature = 36.7,
+        bloodPressure = "115/72",
+        bloodSugar = 75,
+        healthStatus = 70
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-27",
+        time = "12:00:00",
+        averageTemperature = 36.8,
+        bloodPressure = "118/75",
+        bloodSugar = 77,
+        healthStatus = 72
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-27",
+        time = "11:00:00",
+        averageTemperature = 36.6,
+        bloodPressure = "112/68",
+        bloodSugar = 68,
+        healthStatus = 62
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-27",
+        time = "10:00:00",
+        averageTemperature = 36.8,
+        bloodPressure = "110/70",
+        bloodSugar = 77,
+        healthStatus = 71
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-27",
+        time = "09:00:00",
+        averageTemperature = 36.9,
+        bloodPressure = "126/85",
+        bloodSugar = 80,
+        healthStatus = 80
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-27",
+        time = "08:00:00",
+        averageTemperature = 36.7,
+        bloodPressure = "115/72",
+        bloodSugar = 75,
+        healthStatus = 70
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-27",
+        time = "07:00:00",
+        averageTemperature = 36.7,
+        bloodPressure = "115/72",
+        bloodSugar = 75,
+        healthStatus = 70
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-27",
+        time = "06:00:00",
+        averageTemperature = 36.8,
+        bloodPressure = "118/75",
+        bloodSugar = 77,
+        healthStatus = 72
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-27",
+        time = "05:00:00",
+        averageTemperature = 36.6,
+        bloodPressure = "112/68",
+        bloodSugar = 68,
+        healthStatus = 62
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-27",
+        time = "04:00:00",
+        averageTemperature = 36.8,
+        bloodPressure = "110/70",
+        bloodSugar = 77,
+        healthStatus = 71
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-27",
+        time = "03:00:00",
+        averageTemperature = 36.9,
+        bloodPressure = "126/85",
+        bloodSugar = 80,
+        healthStatus = 80
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-27",
+        time = "02:00:00",
+        averageTemperature = 36.7,
+        bloodPressure = "115/72",
+        bloodSugar = 75,
+        healthStatus = 70
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-27",
+        time = "01:00:00",
+        averageTemperature = 36.7,
+        bloodPressure = "115/72",
+        bloodSugar = 75,
+        healthStatus = 70
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-27",
+        time = "00:00:00",
+        averageTemperature = 36.8,
+        bloodPressure = "118/75",
+        bloodSugar = 77,
+        healthStatus = 72
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "23:00:00",
+        averageTemperature = 36.6,
+        bloodPressure = "112/68",
+        bloodSugar = 68,
+        healthStatus = 62
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "22:00:00",
+        averageTemperature = 36.8,
+        bloodPressure = "110/70",
+        bloodSugar = 77,
+        healthStatus = 71
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "21:00:00",
+        averageTemperature = 36.9,
+        bloodPressure = "126/85",
+        bloodSugar = 80,
+        healthStatus = 80
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "20:00:00",
+        averageTemperature = 36.7,
+        bloodPressure = "115/72",
+        bloodSugar = 75,
+        healthStatus = 70
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "19:00:00",
+        averageTemperature = 36.7,
+        bloodPressure = "115/72",
+        bloodSugar = 75,
+        healthStatus = 70
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "18:00:00",
+        averageTemperature = 36.8,
+        bloodPressure = "118/75",
+        bloodSugar = 77,
+        healthStatus = 72
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "17:00:00",
+        averageTemperature = 36.6,
+        bloodPressure = "112/68",
+        bloodSugar = 68,
+        healthStatus = 62
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "16:00:00",
+        averageTemperature = 36.8,
+        bloodPressure = "110/70",
+        bloodSugar = 77,
+        healthStatus = 71
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "15:00:00",
+        averageTemperature = 36.9,
+        bloodPressure = "126/85",
+        bloodSugar = 80,
+        healthStatus = 80
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "14:00:00",
+        averageTemperature = 36.7,
+        bloodPressure = "115/72",
+        bloodSugar = 75,
+        healthStatus = 70
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "12:00:00",
+        averageTemperature = 36.7,
+        bloodPressure = "115/72",
+        bloodSugar = 75,
+        healthStatus = 70
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "11:00:00",
+        averageTemperature = 36.8,
+        bloodPressure = "118/75",
+        bloodSugar = 77,
+        healthStatus = 72
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "10:00:00",
+        averageTemperature = 36.6,
+        bloodPressure = "112/68",
+        bloodSugar = 68,
+        healthStatus = 62
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "09:00:00",
+        averageTemperature = 36.8,
+        bloodPressure = "110/70",
+        bloodSugar = 77,
+        healthStatus = 71
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "08:00:00",
+        averageTemperature = 36.9,
+        bloodPressure = "126/85",
+        bloodSugar = 80,
+        healthStatus = 80
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "07:00:00",
+        averageTemperature = 36.7,
+        bloodPressure = "115/72",
+        bloodSugar = 75,
+        healthStatus = 70
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "06:00:00",
+        averageTemperature = 36.7,
+        bloodPressure = "115/72",
+        bloodSugar = 75,
+        healthStatus = 70
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "05:00:00",
+        averageTemperature = 36.8,
+        bloodPressure = "118/75",
+        bloodSugar = 77,
+        healthStatus = 72
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "04:00:00",
+        averageTemperature = 36.6,
+        bloodPressure = "112/68",
+        bloodSugar = 68,
+        healthStatus = 62
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "03:00:00",
+        averageTemperature = 36.8,
+        bloodPressure = "110/70",
+        bloodSugar = 77,
+        healthStatus = 71
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "02:00:00",
+        averageTemperature = 36.9,
+        bloodPressure = "126/85",
+        bloodSugar = 80,
+        healthStatus = 80
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "01:00:00",
+        averageTemperature = 36.7,
+        bloodPressure = "115/72",
+        bloodSugar = 75,
+        healthStatus = 70
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-26",
+        time = "00:00:00",
+        averageTemperature = 36.7,
+        bloodPressure = "115/72",
+        bloodSugar = 75,
+        healthStatus = 70
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-25",
+        time = "23:00:00",
+        averageTemperature = 36.8,
+        bloodPressure = "118/75",
+        bloodSugar = 77,
+        healthStatus = 72
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-25",
+        time = "22:00:00",
+        averageTemperature = 36.6,
+        bloodPressure = "112/68",
+        bloodSugar = 68,
+        healthStatus = 62
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-25",
+        time = "21:00:00",
+        averageTemperature = 36.8,
+        bloodPressure = "110/70",
+        bloodSugar = 77,
+        healthStatus = 71
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-25",
+        time = "20:00:00",
+        averageTemperature = 36.9,
+        bloodPressure = "126/85",
+        bloodSugar = 80,
+        healthStatus = 80
+    ),
+    Bio(
+        id = 1,
+        patientId = 1,
+        patientCode = "PAT_1",
+        date = "2024-11-25",
+        time = "19:00:00",
+        averageTemperature = 36.7,
+        bloodPressure = "115/72",
+        bloodSugar = 75,
+        healthStatus = 70
+    ),
+).sortedBy { it.date + it.time }
