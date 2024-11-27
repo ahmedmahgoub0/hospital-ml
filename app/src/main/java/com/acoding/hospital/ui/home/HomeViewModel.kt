@@ -32,7 +32,8 @@ import java.time.format.DateTimeFormatter
 
 @Immutable
 data class HomeListState(
-    val isLoading: Boolean = false,
+    val showSearch: Boolean = false,
+    val isLoading: Boolean = true,
     var tabTypeIndex: Int = 0,
     val detailsLoading: Boolean = false,
     val patients: List<Patient> = emptyList(),
@@ -83,6 +84,14 @@ class HomeViewModel(
                 }
             }
         }
+    }
+
+    fun searchClicked() {
+        _state.update { it.copy(showSearch = true) }
+    }
+
+    fun searchClosed() {
+        _state.update { it.copy(showSearch = false) }
     }
 
     private fun loadPatients() {

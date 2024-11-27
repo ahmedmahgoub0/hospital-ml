@@ -144,7 +144,9 @@ fun AdaptiveCoinListDetailPain(
                 },
                 setTabIndexType = {
                     viewModel.setTabTypeIndex(it)
-                }
+                },
+                searchClicked = { viewModel.searchClicked() },
+                searchClosed = { viewModel.searchClosed() }
             )
         },
         detailPane = {

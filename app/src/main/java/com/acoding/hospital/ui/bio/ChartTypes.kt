@@ -133,7 +133,7 @@ fun SugarGraph(
             contentHorizontalPadding = 4.dp,
             contentVerticalPadding = 2.dp,
             contentBuilder = { value ->
-                "%.1f".format(value) + " mm/Hg"
+                "%.1f".format(value) + " Mg/DL"
             }
         ),
         dotsProperties = DotProperties(
@@ -375,7 +375,7 @@ fun PressureGraph(
             contentHorizontalPadding = 4.dp,
             contentVerticalPadding = 2.dp,
             contentBuilder = { value ->
-                "%.1f".format(value) + " Mg/DL"
+                "%.1f".format(value) + " mm/Hg"
             }
         ),
         dotsProperties = DotProperties(

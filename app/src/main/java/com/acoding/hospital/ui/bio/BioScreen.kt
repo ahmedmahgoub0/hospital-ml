@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -35,10 +36,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.acoding.hospital.R
@@ -96,6 +99,8 @@ fun BioScreen(
             //            }
              */
 
+            val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+
             Column(
                 modifier = modifier
                     .fillMaxSize()
@@ -105,7 +110,11 @@ fun BioScreen(
                 val criticalColor =
                     if (patient.healthStatus < 60) MaterialTheme.colorScheme.error
                     else greenBackground
-                val critical = if (patient.healthStatus < 60) "Critical" else "Normal"
+                val critical = when (state.tabTypeIndex) {
+                    0 -> if (patient.healthStatus < 60) "Critical" else "Normal" // sugar
+                    1 -> if (patient.age <= 40) "Critical" else "Normal"  // pressure
+                    else -> if (patient.gender == "Male") "Critical" else "Normal" // temperature
+                }
                 val context = LocalContext.current
 
                 /** Box for back button and patient profile title */
@@ -127,7 +136,7 @@ fun BioScreen(
                     ) {
                         Icon(
                             modifier = Modifier.align(Alignment.Center),
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = if (!isRtl) Icons.Default.ArrowBack else Icons.Default.ArrowForward,
                             contentDescription = null,
                             tint = Color.Black
                         )
@@ -153,7 +162,7 @@ fun BioScreen(
                         .size(110.dp)
                         .clip(CircleShape)
                         .border(
-                            width = 2.dp,
+                            width = 3.dp,
                             color = if (critical == "Normal") Color.Green else Color.Red,
                             shape = CircleShape
                         )

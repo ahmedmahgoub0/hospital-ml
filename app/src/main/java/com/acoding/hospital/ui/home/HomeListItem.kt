@@ -42,8 +42,8 @@ fun HomeListItem(
 
     val criticalColor = when (tabTypeIndex) {
         0 -> if (patient.healthStatus < 60) MaterialTheme.colorScheme.error else greenBackground
-        1 -> if (patient.age < 35) MaterialTheme.colorScheme.error else greenBackground
-        else -> if (patient.id > 10) MaterialTheme.colorScheme.error else greenBackground
+        1 -> if (patient.age <= 40) MaterialTheme.colorScheme.error else greenBackground
+        else -> if (patient.gender > "Male") MaterialTheme.colorScheme.error else greenBackground
     }
 
 //    val criticalColor = if (patient.healthStatus < 60) MaterialTheme.colorScheme.error

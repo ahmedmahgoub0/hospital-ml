@@ -44,9 +44,10 @@ import com.acoding.hospital.R
 import com.acoding.hospital.data.datastore.Language
 import com.acoding.hospital.data.model.Patient
 import com.acoding.hospital.helpers.updateLocale
+import com.acoding.hospital.ui.SearchScreen
 import com.acoding.hospital.ui.theme.Inter
 
-//
+/** Home screen previous code
 //@Composable
 //fun HomeScreen(
 //    state: HomeListState,
@@ -127,7 +128,7 @@ import com.acoding.hospital.ui.theme.Inter
 //        }
 //    }
 //}
-
+ */
 
 @Composable
 fun HomeScreen(
@@ -135,40 +136,22 @@ fun HomeScreen(
     onClick: (patientId: Int, tabTypeIndex: Int) -> Unit,
     onLanguageChanged: (Language) -> Unit,
     setTabIndexType: (Int) -> Unit,
+    searchClosed: () -> Unit,
+    searchClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
     val context = LocalContext.current
-
-    // Tabs state
     var selectedTabIndex by remember { mutableIntStateOf(0) }
-
-    // Sample patient data for each category
-    val sugarPatients = state.patients.sortedBy {
-        it.healthStatus >= 90
-    }
-
-    val pressurePatients = state.patients.sortedBy {
-        it.age >= 35
-    }
-
-    val tempPatients = state.patients.sortedBy {
-        it.gender == "male"
-    }
-
-    var searchText by remember { mutableStateOf("") }
-    val filteredItems = when (selectedTabIndex) {
-        0 -> sugarPatients.filter { it.name.contains(searchText, ignoreCase = true) }
-        1 -> pressurePatients.filter { it.name.contains(searchText, ignoreCase = true) }
-        else -> tempPatients.filter { it.name.contains(searchText, ignoreCase = true) }
-    }
+    val filteredSugarItems = state.patients.sortedByDescending { it.healthStatus < 60 }
+    val filteredPressureItems = state.patients.sortedByDescending { it.age <= 40 }
+    val filteredTempItems = state.patients.sortedByDescending { it.gender == "Male" }
 
     val tabTitles = listOf(
         stringResource(R.string.sugar),
         stringResource(R.string.pressure),
         stringResource(R.string.temperature)
     )
-
     var shouldShowLanguageDialog by remember { mutableStateOf(false) }
 
     if (shouldShowLanguageDialog) {
@@ -205,10 +188,20 @@ fun HomeScreen(
         }
     }
 
+    if (state.showSearch) {
+        SearchScreen(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
+            list = state.patients,
+            onBack = { searchClosed() },
+            onClickPatient = { id, tabTypeIndex ->
+                onClick(id, tabTypeIndex)
+            },
+        )
+    }
 
     Column {
-
-
         if (state.isLoading) {
             Box(
                 modifier = modifier.fillMaxSize(),
@@ -217,11 +210,6 @@ fun HomeScreen(
                 CircularProgressIndicator()
             }
         } else {
-            val list = when (selectedTabIndex) {
-                0 -> sugarPatients
-                1 -> pressurePatients
-                else -> tempPatients
-            }
 
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -233,7 +221,7 @@ fun HomeScreen(
                     modifier = Modifier
                         .padding(start = 16.dp)
                         .size(28.dp),
-                    tint = Color.Unspecified
+                    tint = Color.Black
                 )
 
                 Text(
@@ -247,14 +235,14 @@ fun HomeScreen(
                         letterSpacing = 0.1.sp,
                         fontWeight = FontWeight.SemiBold
                     ),
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.onBackground,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
                 IconButton(
                     onClick = {
-                        /* TODO: Handle search icon click  */
+                        searchClicked()
                     },
                     modifier = Modifier
 
@@ -262,7 +250,7 @@ fun HomeScreen(
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.ic_search),
                         contentDescription = "search",
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
 
@@ -275,7 +263,7 @@ fun HomeScreen(
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.ic_language),
                         contentDescription = "language",
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
             }
@@ -296,7 +284,7 @@ fun HomeScreen(
                         text = {
                             Text(
                                 text = title,
-                                color = if (selected) MaterialTheme.colorScheme.primary
+                                color = if (selected) MaterialTheme.colorScheme.onBackground
                                 else MaterialTheme.colorScheme.onBackground,
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontSize = if (selected) 15.sp else 13.sp,
@@ -325,9 +313,15 @@ fun HomeScreen(
 //                    .padding(horizontal = 16.dp)
 //            )
 
+            val list = when (state.tabTypeIndex) {
+                0 -> filteredSugarItems
+                1 -> filteredPressureItems
+                else -> filteredTempItems
+
+            }
             PatientList(
                 tabTypeIndex = selectedTabIndex,
-                patients = filteredItems,
+                patients = list,
                 onClick = onClick
             )
         }
