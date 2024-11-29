@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "887962620202",
+    "project_id": "ml-project-f8aec",
+    "storage_bucket": "ml-project-f8aec.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:887962620202:android:1a020431dbcd4604fc4e53",
+        "android_client_info": {
+          "package_name": "com.acoding.hospital"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLB5Cz7QxeaF74b9sAx8QgKm5vJU0KAPw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

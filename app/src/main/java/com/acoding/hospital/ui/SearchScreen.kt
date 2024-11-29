@@ -33,6 +33,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -106,7 +107,7 @@ fun SearchScreen(
             }
 
             Text(
-                text = "Search",
+                text = stringResource(R.string.search),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge.copy(
@@ -118,7 +119,7 @@ fun SearchScreen(
 
         DocdocSearchTextField(
             text = query,
-            placeholderText = "Search",
+            placeholderText = stringResource(R.string.search),
             isError = false,
             errorMessage = "",
             singleLine = true,
@@ -197,7 +198,8 @@ fun DocdocSearchTextField(
             Text(
                 text = placeholderText,
                 style = MaterialTheme.typography.labelLarge.copy(
-                    fontFamily = Inter
+                    fontFamily = Inter,
+                    color = if (isFocused) MaterialTheme.colorScheme.primary else Gray
                 )
             )
         },

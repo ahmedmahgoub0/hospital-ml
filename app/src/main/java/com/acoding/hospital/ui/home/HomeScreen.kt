@@ -161,6 +161,13 @@ fun HomeScreen(
             }
         ) {
             Column {
+                Text(
+                    text = stringResource(R.string.choose_language),
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    modifier = Modifier.padding(16.dp)
+                )
                 Language.entries.forEach {
                     Row(
                         modifier = Modifier
@@ -168,6 +175,7 @@ fun HomeScreen(
                             .clickable {
                                 updateLocale(context, it.locale)
                                 onLanguageChanged(it)
+                                shouldShowLanguageDialog = false
                             }
                             .padding(horizontal = 16.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically,

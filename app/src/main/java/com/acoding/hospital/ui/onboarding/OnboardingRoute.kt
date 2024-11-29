@@ -7,7 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.acoding.hospital.ui.login.navigateToLogin
 
-private val ROUTE = "onboarding"
+private const val ROUTE = "onboarding"
 
 fun NavGraphBuilder.onboardingScreen(navController: NavHostController) {
     composable(route = ROUTE) {

@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -76,7 +77,7 @@ fun OnboardingScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             Text(
-                text = "Best Doctor Appointment App",
+                text = stringResource(R.string.welcome_to_your_health_companion),
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
@@ -85,7 +86,7 @@ fun OnboardingScreen(
             )
             Spacer(modifier = Modifier.weight(0.15f))
             Text(
-                text = "Manage and schedule all of your medical appointments easily with Docdoc to get a new experience.",
+                text = stringResource(R.string.access_your_patients_track_vital_signs_and_ensure_quality_care_all_in_one_place),
                 style = MaterialTheme.typography.labelSmall,
                 color = Gray,
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -93,7 +94,7 @@ fun OnboardingScreen(
             )
 
             DocdocButton(
-                text = "Get started",
+                text = stringResource(R.string.get_started),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),

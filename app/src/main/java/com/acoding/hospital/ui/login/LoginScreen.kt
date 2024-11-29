@@ -82,7 +82,7 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(84.dp))
 
                 DocdocTextField(
-
+                    leadingIcon = R.drawable.ic_username,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
@@ -93,6 +93,7 @@ fun LoginScreen(
                 )
 
                 DocdocTextField(
+                    leadingIcon = R.drawable.ic_lock,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),

@@ -30,6 +30,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
@@ -58,6 +59,7 @@ import com.acoding.hospital.R
 import com.acoding.hospital.data.model.Bio
 import com.acoding.hospital.data.model.Patient
 import com.acoding.hospital.ui.home.HomeListState
+import com.acoding.hospital.ui.home.LanguageDialog
 import com.acoding.hospital.ui.theme.Inter
 import com.acoding.hospital.ui.theme.LightGray
 import com.acoding.hospital.ui.theme.greenBackground
@@ -102,7 +104,7 @@ fun BioScreen(
             modifier = modifier,
             contentAlignment = Alignment.Center
         ) {
-            Text("No Data found!")
+            Text(stringResource(R.string.no_data_found))
         }
     } else {
         val patient = state.selectedPatient
@@ -120,7 +122,7 @@ fun BioScreen(
             val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
 
             var showDialog by remember { mutableStateOf(false) }
-            var selectedDate by remember { mutableStateOf("2024-11-10") }
+            var selectedDate by remember { mutableStateOf("2024-12-1") }
 
             if (showDialog) {
                 DatePickerDialog(
@@ -131,6 +133,55 @@ fun BioScreen(
                         filter(date)
                     }
                 )
+            }
+
+            var shouldShowLanguageDialog by remember { mutableStateOf(false) }
+            var graphType by remember { mutableStateOf(GraphType.Curved) }
+
+            if (shouldShowLanguageDialog) {
+                LanguageDialog(
+                    onDismissRequest = {
+                        shouldShowLanguageDialog = false
+                    }
+                ) {
+                    Column {
+                        Text(
+                            text = stringResource(R.string.graph_type),
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                fontWeight = FontWeight.SemiBold
+                            ),
+                            modifier = Modifier.padding(16.dp)
+                        )
+                        GraphType.entries.forEach {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        graphType = it
+                                        shouldShowLanguageDialog = false
+                                    }
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = when (it) {
+                                        GraphType.Curved -> stringResource(R.string.curved)
+                                        GraphType.Line -> stringResource(R.string.line)
+                                        GraphType.Bar -> stringResource(R.string.bar)
+                                    }
+                                )
+                                RadioButton(
+                                    selected = graphType == it,
+                                    onClick = {
+                                        graphType = it
+                                        shouldShowLanguageDialog = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
             }
 
             Column(
@@ -175,7 +226,7 @@ fun BioScreen(
                     }
 
                     Text(
-                        text = "Patient Profile",
+                        text = stringResource(R.string.patient_profile),
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.titleLarge.copy(
@@ -240,7 +291,7 @@ fun BioScreen(
                             .padding(horizontal = 8.dp, vertical = 4.dp),
                     )
                     Text(
-                        text = "${patient.age} years old",
+                        text = "${patient.age} ${stringResource(R.string.years_old)}",
                         color = contentColor,
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier
@@ -262,7 +313,7 @@ fun BioScreen(
                         modifier = Modifier,
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("No Data found!")
+                        Text(stringResource(R.string.no_data_found))
                     }
                 } else {
                     PatientStatus(
@@ -600,9 +651,7 @@ fun BioScreen(
                             .clip(RoundedCornerShape(12.dp))
                             .background(LightGray.copy(alpha = 0.4f))
                             .clickable {
-                                /*
-                                    TODO:
-                                 */
+                                shouldShowLanguageDialog = true
                             }
                             .padding(horizontal = 8.dp, vertical = 8.dp)
                     ) {
@@ -613,7 +662,11 @@ fun BioScreen(
                             modifier = Modifier.size(24.dp)
                         )
                         Text(
-                            text = stringResource(R.string.graph_type),
+                            text = when (graphType) {
+                                GraphType.Curved -> stringResource(R.string.curved)
+                                GraphType.Line -> stringResource(R.string.line)
+                                GraphType.Bar -> stringResource(R.string.bar)
+                            },
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Light,
                             color = MaterialTheme.colorScheme.onBackground,
@@ -624,18 +677,21 @@ fun BioScreen(
 
                 when (state.tabTypeIndex) {
                     0 -> SugarGraph(
+                        type = graphType,
                         date = selectedDate,
                         state = state,
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     1 -> PressureGraph(
+                        type = graphType,
                         date = selectedDate,
                         state = state,
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     else -> TemperatureGraph(
+                        type = graphType,
                         date = selectedDate,
                         state = state,
                         modifier = Modifier.fillMaxWidth()
@@ -655,7 +711,7 @@ fun PatientInfo(
         modifier = modifier.fillMaxWidth()
     ) {
         Text(
-            text = "Patient Info",
+            text = stringResource(R.string.patient_info),
             style = MaterialTheme.typography.titleMedium.copy(
                 fontFamily = Inter
             ),
@@ -672,18 +728,18 @@ fun PatientInfo(
                 .background(LightGray.copy(0.3f)),
         ) {
             PatientInfoRow(
-                text = "Gender",
+                text = stringResource(R.string.gender),
                 value = patient.gender,
                 iconRes = R.drawable.ic_gender
             )
             PatientInfoRow(
-                text = "Phone",
+                text = stringResource(R.string.phone),
                 value = patient.phoneNo,
                 iconRes = R.drawable.ic_phone,
                 iconColor = Color.Green.copy(alpha = 0.6f)
             )
             PatientInfoRow(
-                text = "Address",
+                text = stringResource(R.string.address),
                 value = patient.address,
                 iconRes = R.drawable.ic_location,
                 iconColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
@@ -701,7 +757,7 @@ fun PatientStatus(
         modifier = modifier.fillMaxWidth()
     ) {
         Text(
-            text = "Bio Indicators",
+            text = stringResource(R.string.bio_indicators),
             style = MaterialTheme.typography.titleMedium.copy(
                 fontFamily = Inter
             ),
@@ -718,19 +774,19 @@ fun PatientStatus(
                 .background(LightGray.copy(0.3f)),
         ) {
             PatientInfoRow(
-                text = "Sugar",
-                value = "${bio.bloodSugar} Mg/DL",
+                text = stringResource(R.string.sugar),
+                value = "${bio.bloodSugar} ${stringResource(R.string.mg_dl)}",
                 iconRes = R.drawable.ic_sugar,
                 iconColor = Color.Red.copy(0.6f)
             )
             PatientInfoRow(
-                text = "Pressure",
-                value = "${bio.bloodPressure} mm Hg",
+                text = stringResource(R.string.pressure),
+                value = "${bio.bloodPressure} ${stringResource(R.string.mm_hg)}",
                 iconRes = R.drawable.ic_blood,
                 iconColor = MaterialTheme.colorScheme.error.copy(0.9f)
             )
             PatientInfoRow(
-                text = "Temperature",
+                text = stringResource(R.string.temperature),
                 value = "${bio.averageTemperature}°",
                 iconRes = R.drawable.ic_temp,
                 iconColor = MaterialTheme.colorScheme.error.copy(alpha = 0.6f)
@@ -897,4 +953,10 @@ fun DatePickerDialog(
     ) {
         DatePicker(state = datePickerState)
     }
+}
+
+enum class GraphType {
+    Curved,
+    Line,
+    Bar,
 }

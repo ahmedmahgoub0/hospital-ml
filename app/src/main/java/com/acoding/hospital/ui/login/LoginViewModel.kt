@@ -2,8 +2,11 @@ package com.acoding.hospital.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.acoding.hospital.data.model.LoginDataStore
 import com.acoding.hospital.data.repo.HospitalRepo
 import com.acoding.hospital.domain.util.NetworkError
+import com.acoding.hospital.domain.util.onError
+import com.acoding.hospital.domain.util.onSuccess
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,19 +47,18 @@ class LoginViewModel(
     fun login() {
         _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-//            repo.login(
-//                username = _uiState.value.username,
-//                password = _uiState.value.password
-//            ).onSuccess { response ->
-//                _uiState.update { it.copy(isLoading = false, showHomeScreen = true) }
-//                val user = response
-//                LoginDataStore.initialize(response)
-//            }.onError {
-//                _uiState.update { it.copy(isLoading = false) }
-//                _event.send(LoginEvent.ShowError(it))
-//            }
-            _uiState.update { it.copy(isLoading = false) }
-            _event.send(LoginEvent.NavigateToHome)
+            repo.login(
+                username = _uiState.value.username,
+                password = _uiState.value.password
+            ).onSuccess { response ->
+                _uiState.update { it.copy(isLoading = false) }
+                val user = response
+                LoginDataStore.initialize(response)
+                _event.send(LoginEvent.NavigateToHome)
+            }.onError {
+                _uiState.update { it.copy(isLoading = false) }
+                _event.send(LoginEvent.ShowError(it))
+            }
         }
     }
 }

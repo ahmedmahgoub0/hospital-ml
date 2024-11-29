@@ -23,8 +23,7 @@ fun MainNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
-    val startDestination = "login"
-
+    val startDestination = "onboarding"
     val homeViewModel: HomeViewModel = koinViewModel()
 
     NavHost(
@@ -73,6 +72,8 @@ fun NavGraphBuilder.homeScreen(
 
 fun NavController.navigateToHome() {
     navigate(HOME_ROUTE) {
+        popUpTo(0) { inclusive = true }
+        launchSingleTop = true
     }
 }
 

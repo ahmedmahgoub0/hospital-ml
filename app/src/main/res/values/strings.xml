@@ -15,12 +15,32 @@
     <string name="age">Age</string>
     <string name="code">Code</string>
     <string name="welcome_back">Welcome Back!</string>
-    <string name="sign_in_to_continue">Sign In To Continue.</string>
+    <string name="sign_in_to_continue">Welcome to the Hospital Management System.\nPlease log in to show your patients status.</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
     <string name="contact_us_if_you_have_any_issues">Contact us if you have any issues.</string>
     <string name="pressure_high">Systolic</string>
     <string name="pressure_low">Diastolic</string>
-    <string name="graph_type">Graph Type</string>
+    <string name="graph_type">Chart Type</string>
+    <string name="choose_language">Choose language</string>
+    <string name="line">Line</string>
+    <string name="bar">Bar</string>
+    <string name="curved">Curved</string>
+    <string name="no_data_found">No Data found!</string>
+    <string name="patient_profile">Patient Profile</string>
+    <string name="years_old">years old</string>
+    <string name="patient_info">Patient Info</string>
+    <string name="gender">Gender</string>
+    <string name="phone">Phone</string>
+    <string name="address">Address</string>
+    <string name="bio_indicators">Bio Indicators</string>
+    <string name="search">Search</string>
+    <string name="mm_hg">mm Hg</string>
+    <string name="mg_dl">Mg/Dl</string>
+    <string name="no_data_assigned_at_this_day">No data assigned at this day</string>
+    <string name="welcome_to_your_health_companion">Hospital Management System</string>
+    <string name="access_your_patients_track_vital_signs_and_ensure_quality_care_all_in_one_place">Streamline operations, track patient data, and optimize resources in a simple and efficient way.</string>
+    <string name="get_started">Get started</string>
+
 </resources>

@@ -1,6 +1,7 @@
 package com.acoding.hospital.ui.onboarding.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,19 +23,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.acoding.hospital.R
 import com.acoding.hospital.ui.theme.Gray
 import com.acoding.hospital.ui.theme.HospitalTheme
+import com.acoding.hospital.ui.theme.Inter
 import com.acoding.hospital.ui.theme.LightGray
 
 @Composable
 fun DocdocTextField(
     text: String,
     placeholderText: String,
+    leadingIcon: Int? = null,
     isPassword: Boolean = false,
     match: Boolean = false,
     isError: Boolean = false,
@@ -67,7 +70,10 @@ fun DocdocTextField(
             Text(
                 text = placeholderText,
                 style = MaterialTheme.typography.labelLarge.copy(
-                    fontFamily = FontFamily.Monospace
+                    fontFamily = Inter,
+                    color = if (isFocused) MaterialTheme.colorScheme.primary
+                    else if (isError) MaterialTheme.colorScheme.error
+                    else Gray
                 )
             )
         },
@@ -102,6 +108,18 @@ fun DocdocTextField(
 
                 }
             }
+        },
+        leadingIcon = {
+            if (leadingIcon != null)
+                Icon(
+                    modifier = Modifier.size(24.dp),
+                    imageVector = ImageVector.vectorResource(leadingIcon),
+                    contentDescription = "icon visible",
+                    tint = if (isFocused && isError) MaterialTheme.colorScheme.error
+                    else if (isFocused) MaterialTheme.colorScheme.primary
+                    else if (isError) MaterialTheme.colorScheme.error
+                    else Gray
+                )
         },
         singleLine = singleLine,
         keyboardOptions = keyboardOptions,
