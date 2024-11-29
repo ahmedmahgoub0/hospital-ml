@@ -24,11 +24,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -38,6 +47,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -52,6 +62,7 @@ import com.acoding.hospital.ui.theme.Inter
 import com.acoding.hospital.ui.theme.LightGray
 import com.acoding.hospital.ui.theme.greenBackground
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 /**
 //enum class BioType {
@@ -64,7 +75,7 @@ import java.time.LocalDate
 @Composable
 fun BioScreen(
     state: HomeListState,
-    filter: (start: LocalDate, end: LocalDate) -> Unit,
+    filter: (date: String) -> Unit,
     modifier: Modifier = Modifier,
     onBack: () -> Unit
 ) {
@@ -86,6 +97,13 @@ fun BioScreen(
         ) {
             CircularProgressIndicator()
         }
+    } else if (state.patients.isEmpty()) {
+        Box(
+            modifier = modifier,
+            contentAlignment = Alignment.Center
+        ) {
+            Text("No Data found!")
+        }
     } else {
         val patient = state.selectedPatient
         if (patient != null) {
@@ -100,6 +118,20 @@ fun BioScreen(
              */
 
             val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+
+            var showDialog by remember { mutableStateOf(false) }
+            var selectedDate by remember { mutableStateOf("2024-11-10") }
+
+            if (showDialog) {
+                DatePickerDialog(
+                    onDismissRequest = { showDialog = false },
+                    onDateSelected = { date ->
+                        selectedDate = date
+                        showDialog = false
+                        filter(date)
+                    }
+                )
+            }
 
             Column(
                 modifier = modifier
@@ -225,12 +257,21 @@ fun BioScreen(
                         .padding(16.dp)
                 )
 
-                PatientStatus(
-                    bio = state.patientBio.last(),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
+                if (state.patientBio.isEmpty()) {
+                    Box(
+                        modifier = Modifier,
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("No Data found!")
+                    }
+                } else {
+                    PatientStatus(
+                        bio = state.patientBio.last(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    )
+                }
 
                 /**  Patient info previous code
                 //
@@ -520,18 +561,82 @@ fun BioScreen(
                 /** chart two
                  */
 
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.Start),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(LightGray.copy(alpha = 0.4f))
+                            .clickable {
+                                showDialog = true
+                            }
+                            .padding(horizontal = 8.dp, vertical = 8.dp)
+                    ) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_filter),
+                            contentDescription = null,
+                            tint = Color.Unspecified,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Text(
+                            text = selectedDate,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Light,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+
+                    Row(
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(LightGray.copy(alpha = 0.4f))
+                            .clickable {
+                                /*
+                                    TODO:
+                                 */
+                            }
+                            .padding(horizontal = 8.dp, vertical = 8.dp)
+                    ) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_graph),
+                            contentDescription = null,
+                            tint = Color.Unspecified,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Text(
+                            text = stringResource(R.string.graph_type),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Light,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                }
+
                 when (state.tabTypeIndex) {
                     0 -> SugarGraph(
+                        date = selectedDate,
                         state = state,
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     1 -> PressureGraph(
+                        date = selectedDate,
                         state = state,
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     else -> TemperatureGraph(
+                        date = selectedDate,
                         state = state,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -596,7 +701,7 @@ fun PatientStatus(
         modifier = modifier.fillMaxWidth()
     ) {
         Text(
-            text = "Health Status",
+            text = "Bio Indicators",
             style = MaterialTheme.typography.titleMedium.copy(
                 fontFamily = Inter
             ),
@@ -755,4 +860,41 @@ fun PatientInfoRow(
         thickness = 2.dp,
         color = MaterialTheme.colorScheme.background
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerDialog(
+    onDismissRequest: () -> Unit,
+    onDateSelected: (String) -> Unit
+) {
+    // Use Material3 DatePicker
+    val datePickerState = rememberDatePickerState()
+
+    DatePickerDialog(
+        onDismissRequest = onDismissRequest,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val selectedDateMillis = datePickerState.selectedDateMillis
+                    if (selectedDateMillis != null) {
+                        val selectedDate =
+                            LocalDate.ofEpochDay(selectedDateMillis / (1000 * 60 * 60 * 24))
+                        val formattedDate =
+                            selectedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                        onDateSelected(formattedDate)
+                    }
+                }
+            ) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text("Cancel")
+            }
+        }
+    ) {
+        DatePicker(state = datePickerState)
+    }
 }

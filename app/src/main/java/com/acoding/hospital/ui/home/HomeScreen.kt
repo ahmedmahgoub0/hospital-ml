@@ -133,7 +133,7 @@ import com.acoding.hospital.ui.theme.Inter
 @Composable
 fun HomeScreen(
     state: HomeListState,
-    onClick: (patientId: Int, tabTypeIndex: Int) -> Unit,
+    onClickPatient: (patientId: Int, tabTypeIndex: Int) -> Unit,
     onLanguageChanged: (Language) -> Unit,
     setTabIndexType: (Int) -> Unit,
     searchClosed: () -> Unit,
@@ -188,7 +188,7 @@ fun HomeScreen(
         }
     }
 
-    if (state.showSearch) {
+    if (false) {
         SearchScreen(
             modifier = Modifier
                 .fillMaxSize()
@@ -196,7 +196,7 @@ fun HomeScreen(
             list = state.patients,
             onBack = { searchClosed() },
             onClickPatient = { id, tabTypeIndex ->
-                onClick(id, tabTypeIndex)
+                onClickPatient(id, tabTypeIndex)
             },
         )
     }
@@ -221,7 +221,7 @@ fun HomeScreen(
                     modifier = Modifier
                         .padding(start = 16.dp)
                         .size(28.dp),
-                    tint = Color.Unspecified
+                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
                 )
 
                 Text(
@@ -235,7 +235,7 @@ fun HomeScreen(
                         letterSpacing = 0.1.sp,
                         fontWeight = FontWeight.SemiBold
                     ),
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.85f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -250,7 +250,8 @@ fun HomeScreen(
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.ic_search),
                         contentDescription = "search",
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.85f)
+
                     )
                 }
 
@@ -263,7 +264,7 @@ fun HomeScreen(
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.ic_language),
                         contentDescription = "language",
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.85f)
                     )
                 }
             }
@@ -284,7 +285,7 @@ fun HomeScreen(
                         text = {
                             Text(
                                 text = title,
-                                color = if (selected) MaterialTheme.colorScheme.primary
+                                color = if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.85f)
                                 else MaterialTheme.colorScheme.onBackground,
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontSize = if (selected) 15.sp else 13.sp,
@@ -296,33 +297,33 @@ fun HomeScreen(
                 }
             }
 
-//            OutlinedTextField(
-//                value = searchText,
-//                onValueChange = { searchText = it },
-//                label = { Text("Patient name") },
-//                singleLine = true,
-//                leadingIcon = {
-//                    Icon(
-//                        imageVector = Icons.Default.Search,
-//                        contentDescription = "Search Icon"
-//                    )
-//                },
-//                shape = MaterialTheme.shapes.large,
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(horizontal = 16.dp)
-//            )
-
+            /**
+            OutlinedTextField(
+            //                value = searchText,
+            //                onValueChange = { searchText = it },
+            //                label = { Text("Patient name") },
+            //                singleLine = true,
+            //                leadingIcon = {
+            //                    Icon(
+            //                        imageVector = Icons.Default.Search,
+            //                        contentDescription = "Search Icon"
+            //                    )
+            //                },
+            //                shape = MaterialTheme.shapes.large,
+            //                modifier = Modifier
+            //                    .fillMaxWidth()
+            //                    .padding(horizontal = 16.dp)
+            //            )
+             */
             val list = when (state.tabTypeIndex) {
                 0 -> filteredSugarItems
                 1 -> filteredPressureItems
                 else -> filteredTempItems
-
             }
             PatientList(
                 tabTypeIndex = selectedTabIndex,
                 patients = list,
-                onClick = onClick
+                onClick = onClickPatient
             )
         }
     }

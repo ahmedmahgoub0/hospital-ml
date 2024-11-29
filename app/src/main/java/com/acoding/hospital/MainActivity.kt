@@ -1,10 +1,16 @@
 package com.acoding.hospital
 
+import android.Manifest.permission.POST_NOTIFICATIONS
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,6 +22,7 @@ import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaf
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,6 +43,8 @@ import com.acoding.hospital.ui.home.HomeListEvent
 import com.acoding.hospital.ui.home.HomeScreen
 import com.acoding.hospital.ui.home.HomeViewModel
 import com.acoding.hospital.ui.theme.HospitalTheme
+import com.google.android.gms.tasks.Task
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -43,10 +52,32 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
+
+    private fun askForNotificationPermission(requestPermissionLauncher: ActivityResultLauncher<String>) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissionLauncher.launch(POST_NOTIFICATIONS)
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
         enableEdgeToEdge()
+
+        val requestPermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) {}
+
+
+        FirebaseMessaging.getInstance().subscribeToTopic("all-users")
+            .addOnCompleteListener { task: Task<Void?> ->
+                var msg = "Subscribed to topic!"
+                if (!task.isSuccessful) {
+                    msg = "Subscription failed."
+                }
+                Log.d("FCM", msg)
+            }
 
         setContent {
 
@@ -65,17 +96,26 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     CompositionLocalProvider(LocalLayoutDirection provides local) {
                         val navController = rememberNavController()
+
+                        val patientId = intent?.getStringExtra("patientId")
+                        if (patientId != null) {
+                            // Navigate to the patient profile screen
+                            LaunchedEffect(patientId) {
+                                navController.navigate("patientProfile/$patientId")
+                            }
+                        }
+
                         MainNavGraph(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(innerPadding),
                             navController = navController
                         )
+                        askForNotificationPermission(requestPermissionLauncher)
                     }
                 }
             }
         }
-
     }
 }
 
@@ -133,7 +173,7 @@ fun AdaptiveCoinListDetailPain(
         listPane = {
             HomeScreen(
                 state = state,
-                onClick = { it, index ->
+                onClickPatient = { it, index ->
                     viewModel.clickPatient(it, index)
                     navigator.navigateTo(
                         pane = ListDetailPaneScaffoldRole.Detail
@@ -152,8 +192,8 @@ fun AdaptiveCoinListDetailPain(
         detailPane = {
             BioScreen(
                 state = state,
-                filter = { start, end ->
-                    viewModel.filterByDate(start, end)
+                filter = { date ->
+                    viewModel.filterByDate(date)
                 },
                 onBack = {
                     navigator.navigateBack()

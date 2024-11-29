@@ -15,11 +15,11 @@ data class LoginUiState(
     val isLoading: Boolean = false,
     val username: String = "",
     val password: String = "",
-    val showHomeScreen: Boolean = false
 )
 
 sealed class LoginEvent {
     data class ShowError(val message: NetworkError) : LoginEvent()
+    data object NavigateToHome : LoginEvent()
 }
 
 class LoginViewModel(
@@ -55,7 +55,8 @@ class LoginViewModel(
 //                _uiState.update { it.copy(isLoading = false) }
 //                _event.send(LoginEvent.ShowError(it))
 //            }
-            _uiState.update { it.copy(isLoading = false, showHomeScreen = true) }
+            _uiState.update { it.copy(isLoading = false) }
+            _event.send(LoginEvent.NavigateToHome)
         }
     }
 }

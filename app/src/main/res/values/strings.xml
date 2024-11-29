@@ -22,4 +22,5 @@
     <string name="contact_us_if_you_have_any_issues">Contact us if you have any issues.</string>
     <string name="pressure_high">Systolic</string>
     <string name="pressure_low">Diastolic</string>
+    <string name="graph_type">Graph Type</string>
 </resources>

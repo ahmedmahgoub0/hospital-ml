@@ -2,6 +2,7 @@ package com.acoding.hospital.ui.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -119,8 +121,13 @@ fun HomeListItem(
 
         Box(
             modifier = Modifier
-                .size(74.dp)
-                .clip(RoundedCornerShape(12.dp))
+                .size(64.dp)
+                .clip(CircleShape)
+                .border(
+                    width = 1.dp,
+                    color = if (critical == "Normal") Color.Green else Color.Red,
+                    shape = CircleShape
+                )
         ) {
             Image(
                 painter = painterResource(R.drawable.luffy),
@@ -156,15 +163,15 @@ fun HomeListItem(
 
         Text(
             modifier = Modifier
-                .align(Alignment.Bottom)
-                .padding(bottom = 6.dp)
+                .align(Alignment.CenterVertically)
+                .padding(bottom = 0.dp)
                 .clip(RoundedCornerShape(100f))
                 .background(criticalColor)
-                .padding(horizontal = 6.dp, vertical = 2.dp),
+                .padding(horizontal = 4.dp, vertical = 1.dp),
             text = critical,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onError,
-            fontSize = 14.sp,
+            fontSize = 13.sp,
             fontWeight = FontWeight.Medium
         )
     }

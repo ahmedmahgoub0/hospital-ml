@@ -70,10 +70,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
 
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
-
-    implementation(libs.vico.compose)
-    implementation(libs.vico.compose.m3)
-    implementation(libs.vico.core)
+    implementation("com.google.firebase:firebase-messaging:24.1.0")
 
     implementation("io.github.ehsannarmani:compose-charts:0.0.19")
 }

@@ -54,11 +54,6 @@ androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navig
 androidx-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationRuntimeKtx" }
 androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version.ref = "datastoreCoreAndroid" }
 
-# For Jetpack Compose.
-vico-compose = { group = "com.patrykandpatrick.vico", name = "compose", version.ref = "vico" }
-# For Material 3 theming in Jetpack Compose.
-vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
-vico-core = { group = "com.patrykandpatrick.vico", name = "core", version.ref = "vico" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

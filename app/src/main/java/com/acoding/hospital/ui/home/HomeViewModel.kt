@@ -9,9 +9,6 @@ import com.acoding.hospital.data.datastore.UserPreferences
 import com.acoding.hospital.data.model.Bio
 import com.acoding.hospital.data.model.LoginDataStore
 import com.acoding.hospital.data.model.Patient
-import com.acoding.hospital.data.model.toPressureValues
-import com.acoding.hospital.data.model.toSugarValues
-import com.acoding.hospital.data.model.toTemperatureValues
 import com.acoding.hospital.data.repo.HospitalRepo
 import com.acoding.hospital.domain.util.NetworkError
 import com.acoding.hospital.domain.util.onError
@@ -27,7 +24,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Immutable
@@ -44,7 +40,9 @@ data class HomeListState(
     val pressureHighDataPoints: List<Double> = emptyList(),
     val pressureLowDataPoints: List<Double> = emptyList(),
     val userPreferences: UserPreferences? = null,
-    val datePoints: List<String> = emptyList()
+    val sugarDatePoints: List<String> = emptyList(),
+    val pressureDatePoints: List<String> = emptyList(),
+    val tempDatePoints: List<String> = emptyList(),
 )
 
 sealed interface HomeListAction {
@@ -128,22 +126,29 @@ class HomeViewModel(
         viewModelScope.launch {
             repo.getBio(patientId)
                 .onSuccess { bio ->
+                    _state.update { it.copy(detailsLoading = false) }
                     Log.i("HomeViewModel", "loadBio: $bio")
-
-                    val sugar = bio.map { it.toSugarValues() }
-                    val pressure = bio.map { it.toPressureValues() }
-                    val temperature = bio.map { it.toTemperatureValues() }
 
                     _state.update {
                         it.copy(
-                            patientBio = patientBios,
+                            patientBio = bio,
                             //patientBio = bio,
-                            datePoints = patientBios.takeLast(24).map { value ->
+                            sugarDatePoints = bio.takeLast(24).map { value ->
                                 DateTimeFormatter
                                     .ofPattern("ha\nM/d")
                                     .format(convertToEpochMillis(value.date, value.time))
                             },
-                            sugarDataPoints = patientBios.takeLast(24).map { value ->
+                            pressureDatePoints = bio.takeLast(24).map { value ->
+                                DateTimeFormatter
+                                    .ofPattern("ha\nM/d")
+                                    .format(convertToEpochMillis(value.date, value.time))
+                            },
+                            tempDatePoints = bio.takeLast(24).map { value ->
+                                DateTimeFormatter
+                                    .ofPattern("ha\nM/d")
+                                    .format(convertToEpochMillis(value.date, value.time))
+                            },
+                            sugarDataPoints = bio.takeLast(24).map { value ->
                                 /**                             DataPoint(
                                 //                                    x = value.bloodSugar.toFloat(),
                                 //                                    y = value.bloodSugar.toFloat(),
@@ -154,7 +159,7 @@ class HomeViewModel(
                                  */
                                 value.bloodSugar.toDouble()
                             },
-                            temperatureDataPoints = patientBios.takeLast(24).map { value ->
+                            temperatureDataPoints = bio.takeLast(24).map { value ->
                                 /**                               DataPoint(
                                 //                                    x = value.averageTemperature.toFloat(),
                                 //                                    y = value.averageTemperature.toFloat(),
@@ -165,7 +170,7 @@ class HomeViewModel(
                                 )*/
                                 value.averageTemperature.toDouble()
                             },
-                            pressureHighDataPoints = patientBios.takeLast(24).map { value ->
+                            pressureHighDataPoints = bio.takeLast(24).map { value ->
                                 /**                                Log.i("HomeViewModel Pressure list: ", pressure.toString())
                                 //                                DataPoint(
                                 //                                    x = value.high.toFloat(),
@@ -177,7 +182,7 @@ class HomeViewModel(
                                  */
                                 value.bloodPressure.getValueBeforeSlash().toDouble()
                             },
-                            pressureLowDataPoints = patientBios.takeLast(24).map { value ->
+                            pressureLowDataPoints = bio.takeLast(24).map { value ->
                                 value.bloodPressure.getValueAfterSlash().toDouble()
                             },
                             detailsLoading = false
@@ -191,7 +196,6 @@ class HomeViewModel(
                 }
         }
     }
-
 
     fun clickPatient(patientId: Int, tabTypeIndex: Int) {
         _state.update { it ->
@@ -211,29 +215,82 @@ class HomeViewModel(
         }
     }
 
-    /*
-        TODO: make it for each graph
-     */
-    fun filterByDate(startDate: LocalDate, endDate: LocalDate) {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val start = startDate.format(formatter)
-        val end = endDate.format(formatter)
+    fun filterByDate(date: String) {
+        when (_state.value.tabTypeIndex) {
+            0 -> {
+                _state.update {
+                    val filteredList = _state.value.patientBio.filter { value ->
+                        value.date == date // Ensure formats match
+                    }.sortedBy { it.time }
+                    println("Filtered List: $filteredList") // Debugging
 
-//        _state.update {
-//            it.copy(
-//                sugarDataPoints = it.patientBio.filter { paBi ->
-//                    paBi.date in start..end
-//                }.map { mami ->
-//                    DataPoint(
-//                        x = mami.bloodSugar.toFloat(),
-//                        y = mami.bloodSugar.toFloat(),
-//                        xLabel = DateTimeFormatter
-//                            .ofPattern("ha\nM/d")
-//                            .format(convertToEpochMillis(mami.date, mami.time))
-//                    )
-//                }
-//            )
-//        }
+                    val datePoints = filteredList.map { value ->
+                        val epochMillis = convertToEpochMillis(value.date, value.time)
+                        println("Epoch for ${value.date}, ${value.time}: $epochMillis") // Debugging
+                        DateTimeFormatter.ofPattern("ha").format(epochMillis)
+                    }
+                    println("Date Points: $datePoints") // Debugging
+
+                    println("Data Points: ${filteredList.map { value -> value.bloodSugar.toDouble() }}") // Debugging
+                    it.copy(
+                        sugarDatePoints = datePoints,
+                        sugarDataPoints = filteredList.map { value -> value.bloodSugar.toDouble() }
+                    )
+
+                }
+            }
+
+            1 -> {
+                _state.update {
+                    val filteredList = _state.value.patientBio.filter { value ->
+                        value.date == date // Ensure formats match
+                    }.sortedBy { it.time }
+                    println("Filtered List: $filteredList") // Debugging
+
+                    val datePoints = filteredList.map { value ->
+                        val epochMillis = convertToEpochMillis(value.date, value.time)
+                        println("Epoch for ${value.date}, ${value.time}: $epochMillis") // Debugging
+                        DateTimeFormatter.ofPattern("ha").format(epochMillis)
+                    }
+                    println("Date Points: $datePoints") // Debugging
+
+                    println("Date Points: ${filteredList.map { value -> value.bloodSugar.toDouble() }}") // Debugging
+                    it.copy(
+                        tempDatePoints = datePoints,
+                        temperatureDataPoints = filteredList.map { value -> value.bloodSugar.toDouble() }
+                    )
+
+                }
+
+            }
+
+            else -> {
+                _state.update {
+                    val filteredList = _state.value.patientBio.filter { value ->
+                        value.date == date // Ensure formats match
+                    }.sortedBy { it.time }
+                    println("Filtered List: $filteredList") // Debugging
+
+                    val datePoints = filteredList.map { value ->
+                        val epochMillis = convertToEpochMillis(value.date, value.time)
+                        println("Epoch for ${value.date}, ${value.time}: $epochMillis") // Debugging
+                        DateTimeFormatter.ofPattern("ha").format(epochMillis)
+                    }
+                    println("Date Points: $datePoints") // Debugging
+
+                    println("Date Points: ${filteredList.map { value -> value.bloodSugar.toDouble() }}") // Debugging
+                    it.copy(
+                        pressureDatePoints = datePoints,
+                        pressureHighDataPoints = filteredList.map { value ->
+                            value.bloodPressure.getValueBeforeSlash().toDouble()
+                        },
+                        pressureLowDataPoints = filteredList.map { value ->
+                            value.bloodPressure.getValueAfterSlash().toDouble()
+                        }
+                    )
+                }
+            }
+        }
     }
 }
 

@@ -1,9 +1,6 @@
 package com.acoding.hospital.ui.login
 
 import android.widget.Toast
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -15,37 +12,40 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.acoding.hospital.domain.util.ObserveAsEvents
 import com.acoding.hospital.domain.util.toString
+import com.acoding.hospital.navigateToHome
 import org.koin.androidx.compose.koinViewModel
 
-private val ROUTE = "login"
+private const val ROUTE = "login"
 
 fun NavGraphBuilder.loginScreen(navController: NavHostController) {
     composable(
         route = ROUTE,
-        enterTransition = {
-            slideInHorizontally(
-                initialOffsetX = { 1000 }, // Start from the left
-                animationSpec = tween(300)
-            )
-        },
-        popEnterTransition = {
-            slideInHorizontally(
-                initialOffsetX = { -1000 }, // Start from the left
-                animationSpec = tween(300)
-            )
-        },
-        exitTransition = {
-            slideOutHorizontally(
-                targetOffsetX = { -1000 }, // Exit to the right
-                animationSpec = tween(300)
-            )
-        },
-        popExitTransition = {
-            slideOutHorizontally(
-                targetOffsetX = { 1000 }, // Exit to the right
-                animationSpec = tween(300)
-            )
-        }
+        /** animation
+        //        enterTransition = {
+        //            slideInHorizontally(
+        //                initialOffsetX = { 1000 }, // Start from the left
+        //                animationSpec = tween(300)
+        //            )
+        //        },
+        //        popEnterTransition = {
+        //            slideInHorizontally(
+        //                initialOffsetX = { -1000 }, // Start from the left
+        //                animationSpec = tween(300)
+        //            )
+        //        },
+        //        exitTransition = {
+        //            slideOutHorizontally(
+        //                targetOffsetX = { -1000 }, // Exit to the right
+        //                animationSpec = tween(300)
+        //            )
+        //        },
+        //        popExitTransition = {
+        //            slideOutHorizontally(
+        //                targetOffsetX = { 1000 }, // Exit to the right
+        //                animationSpec = tween(300)
+        //            )
+        //        }
+         */
     ) {
         val viewModel = koinViewModel<LoginViewModel>()
         val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -73,9 +73,11 @@ fun NavGraphBuilder.loginScreen(navController: NavHostController) {
                     ).show()
                 }
 
+                is LoginEvent.NavigateToHome -> {
+                    navController.navigateToHome()
+                }
             }
         }
-
     }
 }
 

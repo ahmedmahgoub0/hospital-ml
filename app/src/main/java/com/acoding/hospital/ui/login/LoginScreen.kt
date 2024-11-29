@@ -48,7 +48,7 @@ fun LoginScreen(
         contentAlignment = Alignment.Center
     ) {
 
-        if (state.showHomeScreen) {
+        if (false) {
             AdaptiveCoinListDetailPain()
         } else {
             Column(

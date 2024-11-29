@@ -1,25 +1,25 @@
 default_platform(:android)
 
 platform :android do
-  before_all do
-    FIREBASE_CLI_TOKEN = "1//03DzX_IWIf4IeCgYIARAAGAMSNwF-L9IrCrjOgUZnx5-1H-1hzDLPLwbLvmyIYLHdgV5uOT39UuJ0Eo08C5SeMsAW3x2XWv8tcQ4"
-    FIREBASE_APP_ID = "1:309660446873:android:a650eb837b56322e800808"
-  end
-
-  desc "Lane for Android Firebase App Distribution"
-  lane :firebase_distribution do
-    gradle(
-      task: "assemble",
-      build_type: "debug"
-    )
-
-    firebase_app_distribution(
-      app: FIREBASE_APP_ID,
-      firebase_cli_token: FIREBASE_CLI_TOKEN,
-      android_artifact_type: "APK",
-      apk_path: "./app/build/outputs/apk/debug/app-debug.apk",
-      release_notes: "test",
-      testers: "ahmedmahgoub0003@gmail.com"
-    )
-  end
+#   before_all do
+#     FIREBASE_CLI_TOKEN = "1//03DzX_IWIf4IeCgYIARAAGAMSNwF-L9IrCrjOgUZnx5-1H-1hzDLPLwbLvmyIYLHdgV5uOT39UuJ0Eo08C5SeMsAW3x2XWv8tcQ4"
+#     FIREBASE_APP_ID = "1:309660446873:android:a650eb837b56322e800808"
+#   end
+#
+#   desc "Lane for Android Firebase App Distribution"
+#   lane :firebase_distribution do
+#     gradle(
+#       task: "assemble",
+#       build_type: "debug"
+#     )
+#
+#     firebase_app_distribution(
+#       app: FIREBASE_APP_ID,
+#       firebase_cli_token: FIREBASE_CLI_TOKEN,
+#       android_artifact_type: "APK",
+#       apk_path: "./app/build/outputs/apk/debug/app-debug.apk",
+#       release_notes: "test",
+#       testers: "ahmedmahgoub0003@gmail.com"
+#     )
+#   end
 end
