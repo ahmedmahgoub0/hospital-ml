@@ -8,14 +8,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.acoding.hospital.ui.SearchScreen
 import com.acoding.hospital.ui.bio.BioScreen
 import com.acoding.hospital.ui.home.HomeScreen
 import com.acoding.hospital.ui.home.HomeViewModel
 import com.acoding.hospital.ui.login.loginScreen
 import com.acoding.hospital.ui.onboarding.onboardingScreen
+import com.acoding.hospital.ui.profile_activity.ProfileScreen
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -36,6 +39,7 @@ fun MainNavGraph(
         homeScreen(navController, homeViewModel)
         profileScreen(navController, homeViewModel)
         searchScreen(navController, homeViewModel)
+        profileFromNotification(navController, homeViewModel)
     }
 }
 
@@ -77,6 +81,40 @@ fun NavController.navigateToHome() {
     }
 }
 
+private const val PROFILE_NOTIFICATION = "patientProfile/{patientId}"
+
+fun NavGraphBuilder.profileFromNotification(
+    navController: NavController,
+    viewModel: HomeViewModel
+) {
+    composable(
+        route = "patientProfile/{patientId}",
+        arguments = listOf(navArgument("patientId") { type = NavType.IntType })
+    ) { backStackEntry ->
+        val state by viewModel.state.collectAsStateWithLifecycle()
+        val patientId = backStackEntry.arguments?.getInt("patientId") ?: 0
+
+        if (patientId == 0) {
+
+        } else {
+            ProfileScreen(
+                navController = navController, patientId = 3990, setPatient = {},
+                state = state,
+                filter = {
+                    viewModel.filterByDate(it)
+                },
+                modifier = Modifier.fillMaxSize(),
+                onBack = {
+                    navController.navigateToHome()
+                },
+            )
+        }
+    }
+}
+
+fun NavController.navigateToProfileWithNotification(route: String) {
+    navigate(route)
+}
 
 private const val Profile_ROUTE = "profileScreen"
 fun NavGraphBuilder.profileScreen(

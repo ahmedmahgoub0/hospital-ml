@@ -9,10 +9,14 @@ import com.acoding.hospital.data.datastore.toDomain
 import com.acoding.hospital.data.model.BaseResponse
 import com.acoding.hospital.data.model.Bio
 import com.acoding.hospital.data.model.BioDto
+import com.acoding.hospital.data.model.Hospital
+import com.acoding.hospital.data.model.HospitalBody
+import com.acoding.hospital.data.model.HospitalDto
 import com.acoding.hospital.data.model.LoginResponse
 import com.acoding.hospital.data.model.Patient
 import com.acoding.hospital.data.model.PatientDto
 import com.acoding.hospital.data.model.toBio
+import com.acoding.hospital.data.model.toHospital
 import com.acoding.hospital.data.model.toPatient
 import com.acoding.hospital.data.networking.constructUrl
 import com.acoding.hospital.data.networking.safeCall
@@ -51,9 +55,10 @@ interface HospitalRepo {
     val userDate: Flow<UserPreferences>
 
     suspend fun setLanguage(language: Language)
+    suspend fun setPatientId(id: String)
 
     suspend fun getPatients(hospitalId: Int): Result<List<Patient>, NetworkError>
-
+    suspend fun getHospitalInfo(hospitalId: Int): Result<Hospital, NetworkError>
     suspend fun getBio(patientId: Int): Result<List<Bio>, NetworkError>
 
     suspend fun login(username: String, password: String): Result<LoginResponse, NetworkError>
@@ -74,6 +79,27 @@ class HospitalRepoImpl(
         }
     }
 
+    override suspend fun getHospitalInfo(hospitalId: Int): Result<Hospital, NetworkError> {
+        return safeCall<BaseResponse<HospitalDto>> {
+            client.post(
+                urlString = constructUrl("hospitals/fetch")
+            ) {
+                val hospitalBody = HospitalBody(
+                    hospital_id = hospitalId
+                )
+                contentType(ContentType.Application.Json)
+                setBody(hospitalBody)
+            }
+        }.map { response ->
+            response.data.toHospital()
+        }
+    }
+
+    override suspend fun setPatientId(id: String) {
+        dataStore.updateData {
+            it.copy(patientId = id)
+        }
+    }
 
     override suspend fun getPatients(hospitalId: Int): Result<List<Patient>, NetworkError> {
         return safeCall<BaseResponse<List<PatientDto>>> {

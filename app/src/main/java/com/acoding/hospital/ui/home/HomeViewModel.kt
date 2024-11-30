@@ -29,6 +29,7 @@ import java.time.format.DateTimeFormatter
 @Immutable
 data class HomeListState(
     val showSearch: Boolean = false,
+    val hospitalName: String = "Hospital",
     val isLoading: Boolean = true,
     var tabTypeIndex: Int = 0,
     val detailsLoading: Boolean = false,
@@ -61,6 +62,7 @@ class HomeViewModel(
     val state = _state
         .onStart {
             loadPatients()
+            loadHospitalInfo()
             loadPatientsBio(_state.value.selectedPatient?.id ?: 1)
         }
         .stateIn(
@@ -92,6 +94,21 @@ class HomeViewModel(
         _state.update { it.copy(showSearch = false) }
     }
 
+    private fun loadHospitalInfo() {
+        _state.update { it.copy(isLoading = true) }
+        viewModelScope.launch {
+            repo.getHospitalInfo(LoginDataStore.getHospitalId())
+                .onSuccess { hospital ->
+                    Log.i("HomeViewModel", "loadHospitalInfo: $hospital")
+                    _state.update {
+                        it.copy(hospitalName = hospital.hospitalName, isLoading = false)
+                    }
+                }.onError { error ->
+                    _state.update { it.copy(isLoading = false) }
+                }
+        }
+    }
+
     private fun loadPatients() {
         _state.update { it.copy(isLoading = true) }
         viewModelScope.launch {
@@ -117,6 +134,14 @@ class HomeViewModel(
         _state.update {
             it.copy(
                 tabTypeIndex = selected
+            )
+        }
+    }
+
+    fun setSelectedPatient(patientId: Int) {
+        _state.update { it ->
+            it.copy(
+                selectedPatient = it.patients.find { it.id == patientId }
             )
         }
     }
@@ -212,6 +237,14 @@ class HomeViewModel(
             _state.update {
                 it.copy(userPreferences = it.userPreferences?.copy(language = language))
             }
+        }
+    }
+
+    fun setPatient(patientId: Int) {
+        _state.update { it ->
+            it.copy(
+                selectedPatient = it.patients.find { it.id == patientId }
+            )
         }
     }
 

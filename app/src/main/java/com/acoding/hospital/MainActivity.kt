@@ -22,7 +22,6 @@ import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaf
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -52,6 +51,8 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
+
+    private var patientId: Int = 0
 
     private fun askForNotificationPermission(requestPermissionLauncher: ActivityResultLauncher<String>) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -86,6 +87,8 @@ class MainActivity : ComponentActivity() {
             var local =
                 if (state.userPreferences?.language?.locale == "ar") LayoutDirection.Rtl else LayoutDirection.Ltr
 
+            val patientId = state.userPreferences?.patientId?.toInt()
+
             updateConfiguration(
                 context = this,
                 language = state.userPreferences?.language?.locale ?: "en",
@@ -97,21 +100,15 @@ class MainActivity : ComponentActivity() {
                     CompositionLocalProvider(LocalLayoutDirection provides local) {
                         val navController = rememberNavController()
 
-                        val patientId = intent?.getStringExtra("patientId")
-                        if (patientId != null) {
-                            // Navigate to the patient profile screen
-                            LaunchedEffect(patientId) {
-                                navController.navigate("patientProfile/$patientId")
-                            }
-                        }
 
+                        askForNotificationPermission(requestPermissionLauncher)
                         MainNavGraph(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(innerPadding),
                             navController = navController
                         )
-                        askForNotificationPermission(requestPermissionLauncher)
+                        
                     }
                 }
             }

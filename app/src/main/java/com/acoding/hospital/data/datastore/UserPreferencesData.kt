@@ -4,7 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserPreferencesData(
-    val languageData: LanguageData = LanguageData.ENGLISH
+    val languageData: LanguageData = LanguageData.ENGLISH,
+    val patientId: String = "0"
 )
 
 @Serializable
@@ -14,7 +15,8 @@ enum class LanguageData(val locale: String) {
 }
 
 data class UserPreferences(
-    val language: Language
+    val language: Language,
+    val patientId: String = "0"
 )
 
 enum class Language(val languageName: String, val locale: String) {

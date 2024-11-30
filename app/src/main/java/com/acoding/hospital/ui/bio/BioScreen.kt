@@ -60,6 +60,7 @@ import com.acoding.hospital.data.model.Bio
 import com.acoding.hospital.data.model.Patient
 import com.acoding.hospital.ui.home.HomeListState
 import com.acoding.hospital.ui.home.LanguageDialog
+import com.acoding.hospital.ui.home.patientToImage
 import com.acoding.hospital.ui.theme.Inter
 import com.acoding.hospital.ui.theme.LightGray
 import com.acoding.hospital.ui.theme.greenBackground
@@ -195,8 +196,8 @@ fun BioScreen(
                     else greenBackground
                 val critical = when (state.tabTypeIndex) {
                     0 -> if (patient.healthStatus < 60) "Critical" else "Normal" // sugar
-                    1 -> if (patient.age <= 40) "Critical" else "Normal"  // pressure
-                    else -> if (patient.gender == "Male") "Critical" else "Normal" // temperature
+                    1 -> if (patient.healthStatus < 63) "Critical" else "Normal"  // pressure
+                    else -> if (patient.healthStatus < 62) "Critical" else "Normal" // temperature
                 }
                 val context = LocalContext.current
 
@@ -238,7 +239,7 @@ fun BioScreen(
 
 
                 Image(
-                    painter = painterResource(R.drawable.luffy),
+                    painter = painterResource(patientToImage(patient.id, patient.gender)),
                     contentDescription = null,
                     modifier = Modifier
                         .padding(bottom = 8.dp)

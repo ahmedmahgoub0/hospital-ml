@@ -16,6 +16,10 @@ object LoginDataStore {
         this.user = loginResponse.data
     }
 
+    fun getHospitalId(): Int {
+        return user?.hospitalId ?: 1
+    }
+
     /**
      * Clear the data, e.g., during logout.
      */

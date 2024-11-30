@@ -22,7 +22,6 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -142,10 +141,11 @@ fun HomeScreen(
 ) {
 
     val context = LocalContext.current
-    var selectedTabIndex by remember { mutableIntStateOf(0) }
-    val filteredSugarItems = state.patients.sortedByDescending { it.healthStatus < 60 }
-    val filteredPressureItems = state.patients.sortedByDescending { it.age <= 40 }
-    val filteredTempItems = state.patients.sortedByDescending { it.gender == "Male" }
+    var selectedTabIndex = state.tabTypeIndex
+//    by remember { mutableIntStateOf(0) }
+    val filteredSugarItems = state.patients.sortedByDescending { it.healthStatus <= 60 }
+    val filteredPressureItems = state.patients.sortedByDescending { it.healthStatus <= 50 }
+    val filteredTempItems = state.patients.sortedByDescending { it.healthStatus >= 40 }
 
     val tabTitles = listOf(
         stringResource(R.string.sugar),
@@ -233,7 +233,7 @@ fun HomeScreen(
                 )
 
                 Text(
-                    text = "Hospital", // Fuck You,
+                    text = state.hospitalName,
                     modifier = Modifier
                         .weight(1f)
                         .padding(horizontal = 16.dp)

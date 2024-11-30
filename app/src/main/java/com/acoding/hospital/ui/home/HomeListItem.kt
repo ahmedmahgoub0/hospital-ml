@@ -43,9 +43,9 @@ fun HomeListItem(
     val contentColor = if (isSystemInDarkTheme()) Color.White else Color.Black
 
     val criticalColor = when (tabTypeIndex) {
-        0 -> if (patient.healthStatus < 60) MaterialTheme.colorScheme.error else greenBackground
-        1 -> if (patient.age <= 40) MaterialTheme.colorScheme.error else greenBackground
-        else -> if (patient.gender > "Male") MaterialTheme.colorScheme.error else greenBackground
+        0 -> if (patient.healthStatus <= 60) MaterialTheme.colorScheme.error else greenBackground
+        1 -> if (patient.healthStatus <= 50) MaterialTheme.colorScheme.error else greenBackground
+        else -> if (patient.healthStatus >= 40) MaterialTheme.colorScheme.error else greenBackground
     }
 
 //    val criticalColor = if (patient.healthStatus < 60) MaterialTheme.colorScheme.error
@@ -130,7 +130,7 @@ fun HomeListItem(
                 )
         ) {
             Image(
-                painter = painterResource(R.drawable.luffy),
+                painter = painterResource(patientToImage(patient.id, patient.gender)),
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize()
             )
@@ -174,5 +174,36 @@ fun HomeListItem(
             fontSize = 13.sp,
             fontWeight = FontWeight.Medium
         )
+    }
+}
+
+fun patientToImage(id: Int, gender: String): Int {
+    if (gender == "Male") {
+        return when (id % 11) {
+            0 -> R.drawable.patient1
+            1 -> R.drawable.patient4
+            2 -> R.drawable.patient5
+            3 -> R.drawable.patient6
+            5 -> R.drawable.patient7
+            6 -> R.drawable.patient8
+            7 -> R.drawable.patient9
+            8 -> R.drawable.patient1
+            9 -> R.drawable.patient17
+            10 -> R.drawable.patient18
+            else -> R.drawable.luffy
+        }
+    }
+    return when (id % 11) {
+        0 -> R.drawable.patient2
+        1 -> R.drawable.patient3
+        2 -> R.drawable.patient11
+        3 -> R.drawable.patient12
+        5 -> R.drawable.patient13
+        6 -> R.drawable.patient14
+        7 -> R.drawable.patient15
+        8 -> R.drawable.patient16
+        9 -> R.drawable.patient10
+        10 -> R.drawable.patient3
+        else -> R.drawable.luffy
     }
 }
