@@ -1,6 +1,6 @@
 package com.acoding.hospital.data.networking
 
-private const val BASE_URL = "https://ml-health-system-api.vercel.app/api/"
+private const val BASE_URL = "https://shsd.vercel.app/api/"
 
 fun constructUrl(url: String): String {
     return when {
