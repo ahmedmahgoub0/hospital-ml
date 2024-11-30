@@ -1,4 +1,4 @@
-package com.acoding.hospital.ui.bio
+package com.acoding.hospital.ui.profile_activity
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
@@ -55,9 +55,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.acoding.hospital.R
 import com.acoding.hospital.data.model.Bio
 import com.acoding.hospital.data.model.Patient
+import com.acoding.hospital.ui.bio.GraphType
+import com.acoding.hospital.ui.bio.PressureGraph
+import com.acoding.hospital.ui.bio.SugarGraph
+import com.acoding.hospital.ui.bio.TemperatureGraph
 import com.acoding.hospital.ui.home.HomeListState
 import com.acoding.hospital.ui.home.LanguageDialog
 import com.acoding.hospital.ui.home.patientToImage
@@ -75,8 +80,12 @@ import java.time.format.DateTimeFormatter
 ////    Statistics
 //}
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BioScreen(
+fun ProfileScreen(
+    navController: NavController,
+    patientId: Int,
+    setPatient: (Int) -> Unit,
     state: HomeListState,
     filter: (date: String) -> Unit,
     modifier: Modifier = Modifier,
@@ -108,6 +117,7 @@ fun BioScreen(
             Text(stringResource(R.string.no_data_found))
         }
     } else {
+        setPatient(patientId)
         val patient = state.selectedPatient
         if (patient != null) {
             /**            val modelProducer = remember { CartesianChartModelProducer() }
@@ -123,7 +133,7 @@ fun BioScreen(
             val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
 
             var showDialog by remember { mutableStateOf(false) }
-            var selectedDate by remember { mutableStateOf("2024-11-30") }
+            var selectedDate by remember { mutableStateOf("2024-12-1") }
 
             if (showDialog) {
                 DatePickerDialog(
@@ -137,7 +147,7 @@ fun BioScreen(
             }
 
             var shouldShowLanguageDialog by remember { mutableStateOf(false) }
-            var graphType by remember { mutableStateOf(GraphType.Curved) }
+            var graphType by remember { mutableStateOf(com.acoding.hospital.ui.bio.GraphType.Curved) }
 
             if (shouldShowLanguageDialog) {
                 LanguageDialog(
@@ -153,7 +163,7 @@ fun BioScreen(
                             ),
                             modifier = Modifier.padding(16.dp)
                         )
-                        GraphType.entries.forEach {
+                        com.acoding.hospital.ui.bio.GraphType.entries.forEach {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -196,8 +206,8 @@ fun BioScreen(
                     else greenBackground
                 val critical = when (state.tabTypeIndex) {
                     0 -> if (patient.healthStatus < 60) "Critical" else "Normal" // sugar
-                    1 -> if (patient.healthStatus < 63) "Critical" else "Normal"  // pressure
-                    else -> if (patient.healthStatus < 62) "Critical" else "Normal" // temperature
+                    1 -> if (patient.age <= 40) "Critical" else "Normal"  // pressure
+                    else -> if (patient.gender == "Male") "Critical" else "Normal" // temperature
                 }
                 val context = LocalContext.current
 
@@ -664,9 +674,9 @@ fun BioScreen(
                         )
                         Text(
                             text = when (graphType) {
-                                GraphType.Curved -> stringResource(R.string.curved)
-                                GraphType.Line -> stringResource(R.string.line)
-                                GraphType.Bar -> stringResource(R.string.bar)
+                                com.acoding.hospital.ui.bio.GraphType.Curved -> stringResource(R.string.curved)
+                                com.acoding.hospital.ui.bio.GraphType.Line -> stringResource(R.string.line)
+                                com.acoding.hospital.ui.bio.GraphType.Bar -> stringResource(R.string.bar)
                             },
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Light,
@@ -954,10 +964,4 @@ fun DatePickerDialog(
     ) {
         DatePicker(state = datePickerState)
     }
-}
-
-enum class GraphType {
-    Curved,
-    Line,
-    Bar,
 }

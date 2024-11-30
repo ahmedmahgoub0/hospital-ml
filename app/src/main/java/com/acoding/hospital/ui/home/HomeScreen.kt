@@ -145,7 +145,7 @@ fun HomeScreen(
 //    by remember { mutableIntStateOf(0) }
     val filteredSugarItems = state.patients.sortedByDescending { it.healthStatus <= 60 }
     val filteredPressureItems = state.patients.sortedByDescending { it.healthStatus <= 50 }
-    val filteredTempItems = state.patients.sortedByDescending { it.healthStatus >= 40 }
+    val filteredTempItems = state.patients.sortedByDescending { it.healthStatus <= 60 }
 
     val tabTitles = listOf(
         stringResource(R.string.sugar),

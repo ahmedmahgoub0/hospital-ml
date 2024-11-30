@@ -323,7 +323,7 @@ fun SugarGraph(
 
                     ),
                     animationMode = AnimationMode.Together(delayBuilder = {
-                        it * 500L
+                        it * 10L
                     }),
                     dividerProperties = DividerProperties(
                         enabled = true,
@@ -383,7 +383,7 @@ fun SugarGraph(
                     popupProperties = PopupProperties(
                         enabled = true,
                         animationSpec = tween(0),
-                        duration = 2000L,
+                        duration = 1000L,
                         textStyle = MaterialTheme.typography.labelMedium,
                         containerColor = MaterialTheme.colorScheme.surfaceVariant,
                         cornerRadius = 8.dp,
@@ -678,7 +678,7 @@ fun TemperatureGraph(
                         label1 = stringResource(R.string.temperature)
                     ),
                     animationMode = AnimationMode.Together(delayBuilder = {
-                        it * 500L
+                        it * 10L
                     }),
                     dividerProperties = DividerProperties(
                         enabled = true,
@@ -739,7 +739,7 @@ fun TemperatureGraph(
                     popupProperties = PopupProperties(
                         enabled = true,
                         animationSpec = tween(0),
-                        duration = 2000L,
+                        duration = 1000L,
                         textStyle = MaterialTheme.typography.labelMedium,
                         containerColor = MaterialTheme.colorScheme.surfaceVariant,
                         cornerRadius = 8.dp,
@@ -1058,7 +1058,7 @@ fun PressureGraph(
                         label2 = stringResource(R.string.pressure_low)
                     ),
                     animationMode = AnimationMode.Together(delayBuilder = {
-                        it * 500L
+                        it * 10L
                     }),
                     dividerProperties = DividerProperties(
                         enabled = true,
@@ -1118,7 +1118,7 @@ fun PressureGraph(
                     popupProperties = PopupProperties(
                         enabled = true,
                         animationSpec = tween(0),
-                        duration = 2000L,
+                        duration = 1000L,
                         textStyle = MaterialTheme.typography.labelMedium,
                         containerColor = MaterialTheme.colorScheme.surfaceVariant,
                         cornerRadius = 8.dp,
